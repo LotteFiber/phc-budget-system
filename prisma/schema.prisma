@@ -1,0 +1,259 @@
+// PHC Budget System - Database Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Roles Enum
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  APPROVER
+  STAFF
+  VIEWER
+}
+
+// Budget Status Enum
+enum BudgetStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  ACTIVE
+  CLOSED
+  REJECTED
+}
+
+// Expense Status Enum
+enum ExpenseStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  PAID
+  CANCELLED
+}
+
+// Approval Type Enum
+enum ApprovalType {
+  BUDGET
+  EXPENSE
+}
+
+// Approval Status Enum
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// User Model
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  password     String
+  name         String
+  nameLocal    String? // Thai name
+  role         UserRole   @default(STAFF)
+  departmentId String
+  department   Department @relation(fields: [departmentId], references: [id])
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  createdBudgets  Budget[]       @relation("BudgetCreator")
+  createdExpenses Expense[]      @relation("ExpenseCreator")
+  approvals       Approval[]
+  notifications   Notification[]
+
+  @@index([email])
+  @@index([departmentId])
+}
+
+// Department Model
+model Department {
+  id        String       @id @default(cuid())
+  code      String       @unique
+  name      String
+  nameLocal String // Thai name
+  parentId  String?
+  parent    Department?  @relation("DepartmentHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children  Department[] @relation("DepartmentHierarchy")
+  isActive  Boolean      @default(true)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  users    User[]
+  budgets  Budget[]
+  expenses Expense[]
+
+  @@index([code])
+  @@index([parentId])
+}
+
+// Budget Category Model
+model BudgetCategory {
+  id          String           @id @default(cuid())
+  code        String           @unique
+  name        String
+  nameLocal   String // Thai name
+  description String?
+  parentId    String?
+  parent      BudgetCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children    BudgetCategory[] @relation("CategoryHierarchy")
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  budgets  Budget[]
+  expenses Expense[]
+
+  @@index([code])
+  @@index([parentId])
+}
+
+// Budget Model
+model Budget {
+  id               String         @id @default(cuid())
+  code             String         @unique
+  name             String
+  nameLocal        String // Thai name
+  description      String?
+  descriptionLocal String? // Thai description
+  fiscalYear       Int
+  departmentId     String
+  department       Department     @relation(fields: [departmentId], references: [id])
+  categoryId       String
+  category         BudgetCategory @relation(fields: [categoryId], references: [id])
+  allocatedAmount  Decimal        @db.Decimal(15, 2)
+  status           BudgetStatus   @default(DRAFT)
+  startDate        DateTime
+  endDate          DateTime
+  createdById      String
+  createdBy        User           @relation("BudgetCreator", fields: [createdById], references: [id])
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  expenses  Expense[]
+  approvals Approval[]
+
+  @@index([code])
+  @@index([departmentId])
+  @@index([fiscalYear])
+  @@index([status])
+  @@index([createdById])
+}
+
+// Expense Model
+model Expense {
+  id               String         @id @default(cuid())
+  code             String         @unique
+  budgetId         String
+  budget           Budget         @relation(fields: [budgetId], references: [id])
+  categoryId       String
+  category         BudgetCategory @relation(fields: [categoryId], references: [id])
+  departmentId     String
+  department       Department     @relation(fields: [departmentId], references: [id])
+  title            String
+  titleLocal       String? // Thai title
+  description      String
+  descriptionLocal String? // Thai description
+  amount           Decimal        @db.Decimal(15, 2)
+  expenseDate      DateTime
+  status           ExpenseStatus  @default(DRAFT)
+  createdById      String
+  createdBy        User           @relation("ExpenseCreator", fields: [createdById], references: [id])
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  documents ExpenseDocument[]
+  approvals Approval[]
+
+  @@index([code])
+  @@index([budgetId])
+  @@index([departmentId])
+  @@index([status])
+  @@index([expenseDate])
+  @@index([createdById])
+}
+
+// Expense Document Model
+model ExpenseDocument {
+  id         String   @id @default(cuid())
+  expenseId  String
+  expense    Expense  @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  fileName   String
+  fileUrl    String
+  fileType   String
+  fileSize   Int
+  uploadedAt DateTime @default(now())
+
+  @@index([expenseId])
+}
+
+// Approval Model
+model Approval {
+  id            String         @id @default(cuid())
+  type          ApprovalType
+  referenceId   String // Budget ID or Expense ID
+  budget        Budget?        @relation(fields: [budgetId], references: [id])
+  budgetId      String?
+  expense       Expense?       @relation(fields: [expenseId], references: [id])
+  expenseId     String?
+  level         Int // 1, 2, 3 for multi-level approval
+  approverId    String
+  approver      User           @relation(fields: [approverId], references: [id])
+  status        ApprovalStatus @default(PENDING)
+  comments      String?
+  commentsLocal String? // Thai comments
+  decidedAt     DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([type])
+  @@index([budgetId])
+  @@index([expenseId])
+  @@index([approverId])
+  @@index([status])
+}
+
+// Notification Model
+model Notification {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  type         String // 'BUDGET_APPROVAL', 'EXPENSE_APPROVAL', etc.
+  title        String
+  titleLocal   String? // Thai title
+  message      String
+  messageLocal String? // Thai message
+  link         String?
+  isRead       Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+// Audit Log Model
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String // CREATE, UPDATE, DELETE, APPROVE, etc.
+  entity    String // Budget, Expense, User, etc.
+  entityId  String
+  changes   Json? // Store old/new values
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([entity])
+  @@index([entityId])
+  @@index([createdAt])
+}
