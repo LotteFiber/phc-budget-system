@@ -41,7 +41,8 @@
     "category": "หมวดหมู่",
     "description": "รายละเอียด",
     "confirmDelete": "ยืนยันการลบ",
-    "actionCannotBeUndone": "การดำเนินการนี้ไม่สามารถย้อนกลับได้"
+    "actionCannotBeUndone": "การดำเนินการนี้ไม่สามารถย้อนกลับได้",
+    "unexpectedError": "เกิดข้อผิดพลาดที่ไม่คาดคิด"
   },
   "nav": {
     "dashboard": "แดชบอร์ด",
@@ -154,7 +155,13 @@
       "viewDetails": "ดูรายละเอียด",
       "total": "รวมทั้งหมด",
       "noProjects": "ไม่พบข้อมูลโครงการ",
-      "addNewProject": "เพิ่มโครงการใหม่"
+      "addNewProject": "เพิ่มโครงการใหม่",
+      "disburseDescription": "สร้างรายการเบิกจ่ายสำหรับโครงการ",
+      "selectProject": "เลือกโครงการ",
+      "budgetBalance": "งบประมาณคงเหลือ",
+      "disburseSuccess": "สร้างการเบิกจ่ายสำเร็จ",
+      "disburseFailed": "ไม่สามารถสร้างการเบิกจ่ายได้",
+      "submitDisbursement": "ส่งการเบิกจ่าย"
     },
     "statuses": {
       "draft": "แบบร่าง",
@@ -196,6 +203,8 @@
     "selectBudget": "เลือกงบประมาณ",
     "remainingBudget": "งบประมาณคงเหลือ",
     "confirmSubmit": "คุณแน่ใจหรือไม่ที่จะส่งรายจ่ายนี้เพื่อขออนุมัติ?",
+    "titlePlaceholder": "เช่น การจัดซื้ออุปกรณ์",
+    "descriptionPlaceholder": "รายละเอียดเกี่ยวกับรายจ่ายนี้...",
     "statuses": {
       "draft": "แบบร่าง",
       "pending_approval": "รออนุมัติ",
@@ -278,8 +287,12 @@
     "list": "รายการผู้ใช้งาน",
     "name": "ชื่อ",
     "email": "อีเมล",
+    "password": "รหัสผ่าน",
+    "confirmPassword": "ยืนยันรหัสผ่าน",
     "role": "บทบาท",
     "division": "กลุ่มงาน",
+    "selectDivision": "เลือกกลุ่มงาน",
+    "activeUser": "ผู้ใช้ที่เปิดใช้งานอยู่",
     "status": "สถานะ",
     "approvalLevel": "ระดับการอนุมัติ",
     "noUsers": "ไม่พบผู้ใช้งาน",

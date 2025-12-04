@@ -33,10 +33,14 @@ export default async function NewBudgetAllocationPage({ params }: Props) {
   const budgetsResult = await getBudgets({});
   const budgets = budgetsResult.success ? budgetsResult.data || [] : [];
 
-  // Filter budgets with remaining amount > 0
-  const availableBudgets = budgets.filter(
-    (budget) => budget.remainingAmount > 0
-  );
+  // Filter budgets with remaining amount > 0 and serialize Decimal fields
+  const availableBudgets = budgets
+    .filter((budget) => budget.remainingAmount > 0)
+    .map((budget) => ({
+      ...budget,
+      allocatedAmount: Number(budget.allocatedAmount),
+      remainingAmount: Number(budget.remainingAmount),
+    }));
 
   return (
     <div className="space-y-6">

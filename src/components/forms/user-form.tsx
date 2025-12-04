@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,6 +44,9 @@ export default function UserForm({ user, locale }: UserFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [divisions, setDivisions] = useState<Division[]>([]);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const [formData, setFormData] = useState({
     email: user?.email || "",
@@ -56,6 +60,7 @@ export default function UserForm({ user, locale }: UserFormProps) {
   });
 
   useEffect(() => {
+    setIsMounted(true);
     async function fetchDivisions() {
       const result = await getDivisions();
       if (result.success && result.data) {
@@ -89,11 +94,24 @@ export default function UserForm({ user, locale }: UserFormProps) {
         return;
       }
 
-      const data: any = {
+      const data: {
+        email: string;
+        name: string;
+        nameLocal?: string;
+        role: "SUPER_ADMIN" | "ADMIN" | "APPROVER" | "STAFF" | "VIEWER";
+        divisionId: string;
+        isActive: boolean;
+        password?: string;
+      } = {
         email: formData.email,
         name: formData.name,
         nameLocal: formData.nameLocal || undefined,
-        role: formData.role,
+        role: formData.role as
+          | "SUPER_ADMIN"
+          | "ADMIN"
+          | "APPROVER"
+          | "STAFF"
+          | "VIEWER",
         divisionId: formData.divisionId,
         isActive: formData.isActive,
       };
@@ -114,6 +132,7 @@ export default function UserForm({ user, locale }: UserFormProps) {
         setError(result.error || "An error occurred");
       }
     } catch (err) {
+      console.error("User form error:", err);
       setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);
@@ -139,7 +158,7 @@ export default function UserForm({ user, locale }: UserFormProps) {
             {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email">
-                Email <span className="text-destructive">*</span>
+                {t("users.email")} <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="email"
@@ -184,77 +203,130 @@ export default function UserForm({ user, locale }: UserFormProps) {
               <Label htmlFor="role">
                 {t("users.role")} <span className="text-destructive">*</span>
               </Label>
-              <Select
-                value={formData.role}
-                onValueChange={(value) => handleChange("role", value)}
-                disabled={isLoading}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="SUPER_ADMIN">Super Admin</SelectItem>
-                  <SelectItem value="ADMIN">Admin</SelectItem>
-                  <SelectItem value="APPROVER">Approver</SelectItem>
-                  <SelectItem value="STAFF">Staff</SelectItem>
-                  <SelectItem value="VIEWER">Viewer</SelectItem>
-                </SelectContent>
-              </Select>
+              {isMounted ? (
+                <Select
+                  value={formData.role}
+                  onValueChange={(value) => handleChange("role", value)}
+                  disabled={isLoading}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="SUPER_ADMIN">Super Admin</SelectItem>
+                    <SelectItem value="ADMIN">Admin</SelectItem>
+                    <SelectItem value="APPROVER">Approver</SelectItem>
+                    <SelectItem value="STAFF">Staff</SelectItem>
+                    <SelectItem value="VIEWER">Viewer</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="flex h-9 w-full items-center rounded-md border border-input bg-muted px-3 py-1 text-sm text-muted-foreground">
+                  Loading...
+                </div>
+              )}
             </div>
 
             {/* Division */}
             <div className="space-y-2">
               <Label htmlFor="division">
-                {t("users.division")} <span className="text-destructive">*</span>
+                {t("users.division")}{" "}
+                <span className="text-destructive">*</span>
               </Label>
-              <Select
-                value={formData.divisionId}
-                onValueChange={(value) => handleChange("divisionId", value)}
-                disabled={isLoading}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select division" />
-                </SelectTrigger>
-                <SelectContent>
-                  {divisions.map((division) => (
-                    <SelectItem key={division.id} value={division.id}>
-                      {division.nameLocal}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {isMounted && divisions.length > 0 ? (
+                <Select
+                  {...(formData.divisionId && { value: formData.divisionId })}
+                  onValueChange={(value) => handleChange("divisionId", value)}
+                  disabled={isLoading}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t("users.selectDivision")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {divisions.map((division) => (
+                      <SelectItem key={division.id} value={division.id}>
+                        {division.nameLocal}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="flex h-9 w-full items-center rounded-md border border-input bg-muted px-3 py-1 text-sm text-muted-foreground">
+                  Loading divisions...
+                </div>
+              )}
             </div>
 
             {/* Password */}
             <div className="space-y-2">
               <Label htmlFor="password">
-                Password {!user && <span className="text-destructive">*</span>}
+                {t("users.password")}{" "}
+                {!user && <span className="text-destructive">*</span>}
               </Label>
-              <Input
-                id="password"
-                type="password"
-                value={formData.password}
-                onChange={(e) => handleChange("password", e.target.value)}
-                placeholder={user ? "Leave blank to keep current password" : "••••••••"}
-                required={!user}
-                disabled={isLoading}
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={(e) => handleChange("password", e.target.value)}
+                  placeholder={
+                    user ? "Leave blank to keep current password" : "••••••••"
+                  }
+                  required={!user}
+                  disabled={isLoading}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  disabled={isLoading}
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* Confirm Password */}
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">
-                Confirm Password {!user && <span className="text-destructive">*</span>}
+                {t("users.confirmPassword")}{" "}
+                {!user && <span className="text-destructive">*</span>}
               </Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={(e) => handleChange("confirmPassword", e.target.value)}
-                placeholder={user ? "Leave blank to keep current password" : "••••••••"}
-                required={!user}
-                disabled={isLoading}
-              />
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={formData.confirmPassword}
+                  onChange={(e) =>
+                    handleChange("confirmPassword", e.target.value)
+                  }
+                  placeholder={
+                    user ? "Leave blank to keep current password" : "••••••••"
+                  }
+                  required={!user}
+                  disabled={isLoading}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  disabled={isLoading}
+                  tabIndex={-1}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* Is Active */}
@@ -268,19 +340,23 @@ export default function UserForm({ user, locale }: UserFormProps) {
                 className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
               />
               <Label htmlFor="isActive" className="cursor-pointer">
-                Active User
+                {t("users.activeUser")}
               </Label>
             </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Button type="submit" disabled={isLoading} className="flex-1 sm:flex-none">
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="flex-1 sm:flex-none"
+            >
               {isLoading ? t("common.loading") : t("common.save")}
             </Button>
             <Button
               type="button"
               variant="outline"
-              onClick={() => router.back()}
+              onClick={() => router.push(`/${locale}/dashboard/users`)}
               disabled={isLoading}
               className="flex-1 sm:flex-none"
             >

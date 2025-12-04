@@ -90,6 +90,27 @@ export default function AllocationFilters({
         </Select>
       </div>
 
+      {/* Category Filter */}
+      <div className="space-y-2">
+        <Label>{t("budget.allocation.category")}</Label>
+        <Select
+          value={currentCategory}
+          onValueChange={(value) => updateFilter("categoryId", value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder={t("budget.allocation.selectCategory")} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("budget.allocation.all")}</SelectItem>
+            {categories.map((category) => (
+              <SelectItem key={category.id} value={category.id}>
+                {category.nameLocal}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       {/* Output Filter */}
       <div className="space-y-2">
         <Label>{t("budget.allocation.output")}</Label>
@@ -126,27 +147,6 @@ export default function AllocationFilters({
             {allocations.map((allocation) => (
               <SelectItem key={allocation.id} value={allocation.id}>
                 {allocation.nameLocal}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Category Filter */}
-      <div className="space-y-2">
-        <Label>{t("budget.allocation.category")}</Label>
-        <Select
-          value={currentCategory}
-          onValueChange={(value) => updateFilter("categoryId", value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={t("budget.allocation.selectCategory")} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t("budget.allocation.all")}</SelectItem>
-            {categories.map((category) => (
-              <SelectItem key={category.id} value={category.id}>
-                {category.nameLocal}
               </SelectItem>
             ))}
           </SelectContent>

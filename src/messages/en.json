@@ -41,7 +41,8 @@
     "category": "Category",
     "description": "Description",
     "confirmDelete": "Confirm Deletion",
-    "actionCannotBeUndone": "This action cannot be undone."
+    "actionCannotBeUndone": "This action cannot be undone.",
+    "unexpectedError": "An unexpected error occurred"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -154,7 +155,13 @@
       "viewDetails": "View Details",
       "total": "Total",
       "noProjects": "No projects found",
-      "addNewProject": "Add New Project"
+      "addNewProject": "Add New Project",
+      "disburseDescription": "Create a new expense record for a project.",
+      "selectProject": "Select project",
+      "budgetBalance": "Budget Balance",
+      "disburseSuccess": "Disbursement created successfully",
+      "disburseFailed": "Failed to create disbursement",
+      "submitDisbursement": "Submit Disbursement"
     },
     "statuses": {
       "draft": "Draft",
@@ -196,6 +203,8 @@
     "selectBudget": "Select Budget",
     "remainingBudget": "Remaining Budget",
     "confirmSubmit": "Are you sure you want to submit this expense for approval?",
+    "titlePlaceholder": "e.g. Equipment purchase",
+    "descriptionPlaceholder": "Details about this expense...",
     "statuses": {
       "draft": "Draft",
       "pending_approval": "Pending Approval",
@@ -278,8 +287,12 @@
     "list": "User List",
     "name": "Name",
     "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
     "role": "Role",
     "division": "Division",
+    "selectDivision": "Select Division",
+    "activeUser": "Active User",
     "status": "Status",
     "approvalLevel": "Approval Level",
     "noUsers": "No users found",

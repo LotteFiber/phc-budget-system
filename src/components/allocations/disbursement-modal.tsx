@@ -109,14 +109,14 @@ export default function DisbursementModal({
       });
 
       if (result.success) {
-        toast.success("Disbursement created successfully");
+        toast.success(t("budget.allocation.disburseSuccess"));
         setOpen(false);
         form.reset();
       } else {
-        toast.error(result.error || "Failed to create disbursement");
+        toast.error(result.error || t("budget.allocation.disburseFailed"));
       }
     } catch (error) {
-      toast.error("An unexpected error occurred");
+      toast.error(t("common.unexpectedError"));
       console.error(error);
     } finally {
       setIsSubmitting(false);
@@ -142,7 +142,7 @@ export default function DisbursementModal({
         <DialogHeader>
           <DialogTitle>{t("budget.allocation.disburse")}</DialogTitle>
           <DialogDescription>
-            Create a new expense record for a project.
+            {t("budget.allocation.disburseDescription")}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -159,7 +159,7 @@ export default function DisbursementModal({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select project" />
+                        <SelectValue placeholder={t("budget.allocation.selectProject")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -178,7 +178,7 @@ export default function DisbursementModal({
             {selectedAllocation && (
               <div className="text-sm p-3 bg-muted rounded-md space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Budget Balance:</span>
+                  <span className="text-muted-foreground">{t("budget.allocation.budgetBalance")}:</span>
                   <span
                     className={
                       selectedAllocation.remainingAmount < 0
@@ -190,7 +190,7 @@ export default function DisbursementModal({
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Division:</span>
+                  <span className="text-muted-foreground">{t("divisions.title")}:</span>
                   <span>{selectedAllocation.budget.division.nameLocal}</span>
                 </div>
               </div>
@@ -201,9 +201,9 @@ export default function DisbursementModal({
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Expense Title</FormLabel>
+                  <FormLabel>{t("expense.title")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Equipment purchase" {...field} />
+                    <Input placeholder={t("expense.titlePlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -216,13 +216,17 @@ export default function DisbursementModal({
                 name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Amount (THB)</FormLabel>
+                    <FormLabel>{t("expense.amount")}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         step="0.01"
                         placeholder="0.00"
-                        {...field}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <FormMessage />
@@ -235,7 +239,7 @@ export default function DisbursementModal({
                 name="expenseDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Date</FormLabel>
+                    <FormLabel>{t("expense.date")}</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
@@ -250,10 +254,10 @@ export default function DisbursementModal({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t("common.description")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Details about this expense..."
+                      placeholder={t("expense.descriptionPlaceholder")}
                       className="resize-none"
                       {...field}
                     />
@@ -268,7 +272,7 @@ export default function DisbursementModal({
                 {isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Submit Disbursement
+                {t("budget.allocation.submitDisbursement")}
               </Button>
             </DialogFooter>
           </form>

@@ -120,23 +120,28 @@ export default function AddMemberModal({
     const roleMap: Record<string, { label: string; className: string }> = {
       SUPER_ADMIN: {
         label: "Super Admin",
-        className: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+        className:
+          "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
       },
       ADMIN: {
         label: "Admin",
-        className: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+        className:
+          "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
       },
       APPROVER: {
         label: "Approver",
-        className: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+        className:
+          "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
       },
       STAFF: {
         label: "Staff",
-        className: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
+        className:
+          "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
       },
       VIEWER: {
         label: "Viewer",
-        className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+        className:
+          "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
       },
     };
 

@@ -63,7 +63,7 @@ export default async function BudgetAllocationsPage({
   const serializedAllocations = allAllocations.map((a) => ({
     id: a.id,
     nameLocal: a.nameLocal,
-    remainingAmount: a.remainingAmount,
+    remainingAmount: Number(a.remainingAmount),
     budget: {
       id: a.budget.id,
       categoryId: a.budget.categoryId,
