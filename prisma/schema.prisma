@@ -6,7 +6,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // User Roles Enum
@@ -16,16 +15,6 @@ enum UserRole {
   APPROVER
   STAFF
   VIEWER
-}
-
-// Budget Status Enum
-enum BudgetStatus {
-  DRAFT
-  PENDING_APPROVAL
-  APPROVED
-  ACTIVE
-  CLOSED
-  REJECTED
 }
 
 // Expense Status Enum
@@ -53,46 +42,40 @@ enum ApprovalStatus {
 
 // User Model
 model User {
-  id           String     @id @default(cuid())
-  email        String     @unique
-  password     String
-  name         String
-  nameLocal    String? // Thai name
-  role         UserRole   @default(STAFF)
-  departmentId String
-  department   Department @relation(fields: [departmentId], references: [id])
-  isActive     Boolean    @default(true)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id         String   @id @default(cuid())
+  email      String   @unique
+  password   String
+  name       String
+  nameLocal  String? // Thai name
+  role       UserRole @default(STAFF)
+  divisionId String
+  division   Division @relation(fields: [divisionId], references: [id])
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  createdBudgets  Budget[]       @relation("BudgetCreator")
-  createdExpenses Expense[]      @relation("ExpenseCreator")
-  approvals       Approval[]
-  notifications   Notification[]
+  createdBudgets      Budget[]           @relation("BudgetCreator")
+  createdAllocations  BudgetAllocation[] @relation("AllocationCreator")
+  createdExpenses     Expense[]          @relation("ExpenseCreator")
+  approvals           Approval[]
+  notifications       Notification[]
 
   @@index([email])
-  @@index([departmentId])
+  @@index([divisionId])
 }
 
-// Department Model
-model Department {
-  id        String       @id @default(cuid())
-  code      String       @unique
-  name      String
-  nameLocal String // Thai name
-  parentId  String?
-  parent    Department?  @relation("DepartmentHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  children  Department[] @relation("DepartmentHierarchy")
-  isActive  Boolean      @default(true)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+// Division Model
+model Division {
+  id               String   @id @default(cuid())
+  nameLocal        String // Thai name (required)
+  descriptionLocal String? // Thai description
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   users    User[]
   budgets  Budget[]
   expenses Expense[]
-
-  @@index([code])
-  @@index([parentId])
 }
 
 // Budget Category Model
@@ -116,6 +99,62 @@ model BudgetCategory {
   @@index([parentId])
 }
 
+// Plan Model (แผนงาน)
+model Plan {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  nameLocal   String // Thai name
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  outputs Output[]
+  budgets Budget[]
+
+  @@index([code])
+}
+
+// Output Model (ผลผลิต/โครงการ)
+model Output {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  nameLocal   String // Thai name
+  description String?
+  planId      String
+  plan        Plan     @relation(fields: [planId], references: [id])
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  activities Activity[]
+  budgets    Budget[]
+
+  @@index([code])
+  @@index([planId])
+}
+
+// Activity Model (กิจกรรม)
+model Activity {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  nameLocal   String // Thai name
+  description String?
+  outputId    String
+  output      Output   @relation(fields: [outputId], references: [id])
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  budgets Budget[]
+
+  @@index([code])
+  @@index([outputId])
+}
+
 // Budget Model
 model Budget {
   id               String         @id @default(cuid())
@@ -125,12 +164,17 @@ model Budget {
   description      String?
   descriptionLocal String? // Thai description
   fiscalYear       Int
-  departmentId     String
-  department       Department     @relation(fields: [departmentId], references: [id])
+  divisionId       String
+  division         Division       @relation(fields: [divisionId], references: [id])
   categoryId       String
   category         BudgetCategory @relation(fields: [categoryId], references: [id])
+  planId           String
+  plan             Plan           @relation(fields: [planId], references: [id])
+  outputId         String
+  output           Output         @relation(fields: [outputId], references: [id])
+  activityId       String
+  activity         Activity       @relation(fields: [activityId], references: [id])
   allocatedAmount  Decimal        @db.Decimal(15, 2)
-  status           BudgetStatus   @default(DRAFT)
   startDate        DateTime
   endDate          DateTime
   createdById      String
@@ -138,44 +182,77 @@ model Budget {
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 
-  expenses  Expense[]
-  approvals Approval[]
+  budgetAllocations BudgetAllocation[]
+  expenses          Expense[]
+  approvals         Approval[]
 
   @@index([code])
-  @@index([departmentId])
+  @@index([divisionId])
   @@index([fiscalYear])
-  @@index([status])
   @@index([createdById])
+  @@index([planId])
+  @@index([outputId])
+  @@index([activityId])
+}
+
+// Budget Allocation Model (Projects/Programs created from Budget)
+model BudgetAllocation {
+  id               String   @id @default(cuid())
+  code             String   @unique
+  name             String
+  nameLocal        String // Thai name
+  description      String?
+  descriptionLocal String? // Thai description
+  budgetId         String
+  budget           Budget   @relation(fields: [budgetId], references: [id])
+  allocatedAmount  Decimal  @db.Decimal(15, 2)
+  startDate        DateTime
+  endDate          DateTime
+  status           String   @default("ACTIVE") // ACTIVE, COMPLETED, CANCELLED
+  createdById      String
+  createdBy        User     @relation("AllocationCreator", fields: [createdById], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  expenses Expense[]
+
+  @@index([code])
+  @@index([budgetId])
+  @@index([createdById])
+  @@index([status])
 }
 
 // Expense Model
 model Expense {
-  id               String         @id @default(cuid())
-  code             String         @unique
-  budgetId         String
-  budget           Budget         @relation(fields: [budgetId], references: [id])
-  categoryId       String
-  category         BudgetCategory @relation(fields: [categoryId], references: [id])
-  departmentId     String
-  department       Department     @relation(fields: [departmentId], references: [id])
-  title            String
-  titleLocal       String? // Thai title
-  description      String
-  descriptionLocal String? // Thai description
-  amount           Decimal        @db.Decimal(15, 2)
-  expenseDate      DateTime
-  status           ExpenseStatus  @default(DRAFT)
-  createdById      String
-  createdBy        User           @relation("ExpenseCreator", fields: [createdById], references: [id])
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  id                 String            @id @default(cuid())
+  code               String            @unique
+  budgetId           String
+  budget             Budget            @relation(fields: [budgetId], references: [id])
+  budgetAllocationId String?
+  budgetAllocation   BudgetAllocation? @relation(fields: [budgetAllocationId], references: [id])
+  categoryId         String
+  category           BudgetCategory    @relation(fields: [categoryId], references: [id])
+  divisionId         String
+  division           Division          @relation(fields: [divisionId], references: [id])
+  title              String
+  titleLocal         String? // Thai title
+  description        String
+  descriptionLocal   String? // Thai description
+  amount             Decimal           @db.Decimal(15, 2)
+  expenseDate        DateTime
+  status             ExpenseStatus     @default(DRAFT)
+  createdById        String
+  createdBy          User              @relation("ExpenseCreator", fields: [createdById], references: [id])
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
 
   documents ExpenseDocument[]
   approvals Approval[]
 
   @@index([code])
   @@index([budgetId])
-  @@index([departmentId])
+  @@index([budgetAllocationId])
+  @@index([divisionId])
   @@index([status])
   @@index([expenseDate])
   @@index([createdById])

@@ -25,20 +25,26 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
+      console.log("Attempting login with:", email);
       const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
       });
 
+      console.log("Login result:", result);
+
       if (result?.error) {
-        setError(t("auth.loginError"));
+        console.error("Login error:", result.error);
+        setError(t("auth.loginError") + " - " + result.error);
       } else if (result?.ok) {
+        console.log("Login successful, redirecting...");
         router.push(`/${locale}/dashboard`);
         router.refresh();
       }
     } catch (error) {
-      setError(t("error.general"));
+      console.error("Login exception:", error);
+      setError(t("error.general") + " - " + (error instanceof Error ? error.message : "Unknown error"));
     } finally {
       setIsLoading(false);
     }

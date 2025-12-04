@@ -21,8 +21,8 @@ export default async function DashboardLayout({ children, params }: Props) {
       <Header />
       <div className="flex">
         <Sidebar />
-        <main className="flex-1 p-6 pt-20 md:ml-64">
-          <div className="mx-auto max-w-7xl">{children}</div>
+        <main className="flex-1 w-full pt-20 px-4 sm:px-6 lg:px-8 md:ml-64">
+          <div className="mx-auto max-w-7xl pb-20">{children}</div>
         </main>
       </div>
     </div>

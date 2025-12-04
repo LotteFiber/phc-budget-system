@@ -60,7 +60,7 @@ export default function Header() {
                     {session?.user?.email}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {session?.user?.departmentName}
+                    {session?.user?.divisionName}
                   </p>
                 </div>
               </DropdownMenuLabel>

@@ -9,7 +9,7 @@ const loginSchema = z.object({
   password: z.string().min(6),
 });
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const authOptions = {
   providers: [
     Credentials({
       credentials: {
@@ -29,7 +29,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const user = await prisma.user.findUnique({
             where: { email },
             include: {
-              department: true,
+              division: true,
             },
           });
 
@@ -49,8 +49,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             name: user.name,
             nameLocal: user.nameLocal,
             role: user.role,
-            departmentId: user.departmentId,
-            departmentName: user.department.name,
+            divisionId: user.divisionId,
+            divisionName: user.division.nameLocal || "Unknown Division",
           };
         } catch (error) {
           console.error("Auth error:", error);
@@ -64,30 +64,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: any) {
       if (user) {
-        token.id = user.id;
-        token.role = user.role;
-        token.departmentId = user.departmentId;
-        token.departmentName = user.departmentName;
-        token.nameLocal = user.nameLocal;
+        token.id = user.id as string;
+        token.role = (user as any).role;
+        token.divisionId = (user as any).divisionId;
+        token.divisionName = (user as any).divisionName;
+        token.nameLocal = (user as any).nameLocal;
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (token && session.user) {
-        session.user.id = token.id;
-        session.user.role = token.role;
-        session.user.departmentId = token.departmentId;
-        session.user.departmentName = token.departmentName;
-        session.user.nameLocal = token.nameLocal;
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+        session.user.divisionId = token.divisionId as string;
+        session.user.divisionName = token.divisionName as string;
+        session.user.nameLocal = token.nameLocal as string;
       }
       return session;
     },
   },
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
   },
   secret: process.env.NEXTAUTH_SECRET,
   trustHost: true,
-});
+};
+
+export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);

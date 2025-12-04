@@ -9,8 +9,8 @@ declare module "next-auth" {
     name: string;
     nameLocal?: string | null;
     role: UserRole;
-    departmentId: string;
-    departmentName: string;
+    divisionId: string;
+    divisionName: string;
   }
 
   interface Session {
@@ -20,8 +20,8 @@ declare module "next-auth" {
       name: string;
       nameLocal?: string | null;
       role: UserRole;
-      departmentId: string;
-      departmentName: string;
+      divisionId: string;
+      divisionName: string;
     };
   }
 }
@@ -30,8 +30,8 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     role: UserRole;
-    departmentId: string;
-    departmentName: string;
+    divisionId: string;
+    divisionName: string;
     nameLocal?: string | null;
   }
 }

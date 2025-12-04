@@ -3,7 +3,7 @@ import { Geist, Geist_Mono, Noto_Sans_Thai } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { locales } from "@/i18n";
+import { locales, type Locale } from "@/i18n";
 import SessionProvider from "@/components/providers/session-provider";
 
 const geistSans = Geist({
@@ -33,14 +33,11 @@ type Props = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function LocaleLayout({
-  children,
-  params,
-}: Props) {
+export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params;
 
   // Ensure that the incoming `locale` is valid
-  if (!locales.includes(locale as any)) {
+  if (!locales.includes(locale as Locale)) {
     notFound();
   }
 
@@ -55,8 +52,8 @@ export default async function LocaleLayout({
         style={{
           fontFamily:
             locale === "th"
-              ? "var(--font-noto-sans-thai), var(--font-geist-sans)"
-              : "var(--font-geist-sans)",
+              ? "var(--font-noto-sans-thai), var(--font-geist-sans), sans-serif"
+              : "var(--font-geist-sans), var(--font-noto-sans-thai), sans-serif",
         }}
       >
         <SessionProvider>

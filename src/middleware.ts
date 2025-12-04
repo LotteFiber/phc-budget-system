@@ -1,4 +1,5 @@
 import createIntlMiddleware from "next-intl/middleware";
+import { NextRequest } from "next/server";
 import { locales } from "./i18n";
 
 const intlMiddleware = createIntlMiddleware({
@@ -7,7 +8,7 @@ const intlMiddleware = createIntlMiddleware({
   localePrefix: "always",
 });
 
-export default function middleware(request: Request) {
+export default function middleware(request: NextRequest) {
   return intlMiddleware(request);
 }
 
