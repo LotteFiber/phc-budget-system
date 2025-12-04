@@ -1,9 +1,11 @@
 import { getTranslations } from "next-intl/server";
 import { getDivisions } from "@/actions/division";
+import { auth } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Building2, Users, Wallet } from "lucide-react";
 import Link from "next/link";
+import DeleteDivisionButton from "@/components/divisions/delete-division-button";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -12,9 +14,13 @@ type Props = {
 export default async function DivisionsPage({ params }: Props) {
   const { locale } = await params;
   const t = await getTranslations({ locale });
+  const session = await auth();
 
   const divisionsResult = await getDivisions();
   const divisions = divisionsResult.success ? divisionsResult.data || [] : [];
+
+  const userRole = session?.user?.role || "VIEWER";
+  const canDelete = userRole === "SUPER_ADMIN" || userRole === "ADMIN";
 
   return (
     <div className="space-y-6">
@@ -69,7 +75,7 @@ export default async function DivisionsPage({ params }: Props) {
                       <span>{div._count?.budgets || 0} Budgets</span>
                     </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                  <div className="grid grid-cols-3 gap-2 pt-2">
                     <Link
                       href={`/${locale}/dashboard/divisions/${div.id}`}
                       className="flex-1"
@@ -86,6 +92,23 @@ export default async function DivisionsPage({ params }: Props) {
                         {t("common.edit")}
                       </Button>
                     </Link>
+                    {canDelete && (
+                      <DeleteDivisionButton
+                        id={div.id}
+                        name={div.nameLocal}
+                        locale={locale}
+                        hasUsers={(div._count?.users || 0) > 0}
+                        hasBudgets={(div._count?.budgets || 0) > 0}
+                        hasExpenses={(div._count?.expenses || 0) > 0}
+                        userCount={div._count?.users || 0}
+                        budgetCount={div._count?.budgets || 0}
+                        expenseCount={div._count?.expenses || 0}
+                        variant="ghost"
+                        size="sm"
+                        showIcon={true}
+                        redirectOnSuccess={false}
+                      />
+                    )}
                   </div>
                 </div>
               </CardContent>

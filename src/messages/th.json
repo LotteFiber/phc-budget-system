@@ -40,6 +40,7 @@
     "createdAt": "สร้างเมื่อ",
     "category": "หมวดหมู่",
     "description": "รายละเอียด",
+    "confirmDelete": "ยืนยันการลบ",
     "actionCannotBeUndone": "การดำเนินการนี้ไม่สามารถย้อนกลับได้"
   },
   "nav": {
@@ -258,7 +259,14 @@
     "name": "ชื่อกลุ่มงาน",
     "status": "สถานะ",
     "members": "สมาชิก",
-    "noDivisions": "ไม่พบกลุ่มงาน"
+    "noDivisions": "ไม่พบกลุ่มงาน",
+    "deleteConfirmTitle": "ลบกลุ่มงาน",
+    "deleteConfirmMessage": "คุณแน่ใจหรือไม่ที่จะลบกลุ่มงาน '{name}'? การดำเนินการนี้ไม่สามารถยกเลิกได้",
+    "cannotDeleteWithUsers": "ไม่สามารถลบกลุ่มงานที่มีสมาชิกอยู่ กรุณาลบสมาชิกทั้งหมดก่อน",
+    "cannotDeleteWithBudgets": "ไม่สามารถลบกลุ่มงานที่มีงบประมาณอยู่",
+    "cannotDeleteWithExpenses": "ไม่สามารถลบกลุ่มงานที่มีรายจ่ายอยู่",
+    "deleteSuccess": "ลบกลุ่มงานสำเร็จ",
+    "deleteFailed": "ไม่สามารถลบกลุ่มงานได้"
   },
   "users": {
     "title": "ผู้ใช้งาน",

@@ -184,9 +184,12 @@ export async function deleteDivision(id: string) {
       return { success: false, error: "Unauthorized" };
     }
 
-    // Only SUPER_ADMIN can delete divisions
-    if (session.user.role !== UserRole.SUPER_ADMIN) {
-      return { success: false, error: "Only Super Admin can delete divisions" };
+    // Only SUPER_ADMIN and ADMIN can delete divisions
+    if (
+      session.user.role !== UserRole.SUPER_ADMIN &&
+      session.user.role !== UserRole.ADMIN
+    ) {
+      return { success: false, error: "Insufficient permissions to delete division" };
     }
 
     // Check if division exists

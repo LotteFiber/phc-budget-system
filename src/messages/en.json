@@ -40,6 +40,7 @@
     "createdAt": "Created At",
     "category": "Category",
     "description": "Description",
+    "confirmDelete": "Confirm Deletion",
     "actionCannotBeUndone": "This action cannot be undone."
   },
   "nav": {
@@ -258,7 +259,14 @@
     "name": "Division Name",
     "status": "Status",
     "members": "Members",
-    "noDivisions": "No divisions found"
+    "noDivisions": "No divisions found",
+    "deleteConfirmTitle": "Delete Division",
+    "deleteConfirmMessage": "Are you sure you want to delete division '{name}'? This action cannot be undone.",
+    "cannotDeleteWithUsers": "Cannot delete division with existing members. Please remove all members first.",
+    "cannotDeleteWithBudgets": "Cannot delete division with existing budgets.",
+    "cannotDeleteWithExpenses": "Cannot delete division with existing expenses.",
+    "deleteSuccess": "Division deleted successfully",
+    "deleteFailed": "Failed to delete division"
   },
   "users": {
     "title": "Users",

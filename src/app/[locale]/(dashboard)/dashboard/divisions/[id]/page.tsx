@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { getDivisionById } from "@/actions/division";
+import { auth } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Building2, Users, Wallet, ArrowLeft } from "lucide-react";
+import AddMemberModal from "@/components/divisions/add-member-modal";
+import DeleteDivisionButton from "@/components/divisions/delete-division-button";
+import RemoveMemberButton from "@/components/divisions/remove-member-button";
 
 type Props = {
   params: Promise<{ locale: string; id: string }>;
@@ -22,6 +26,7 @@ type Props = {
 export default async function DivisionDetailPage({ params }: Props) {
   const { locale, id } = await params;
   const t = await getTranslations({ locale });
+  const session = await auth();
 
   const result = await getDivisionById(id);
 
@@ -30,6 +35,10 @@ export default async function DivisionDetailPage({ params }: Props) {
   }
 
   const division = result.data;
+
+  const userRole = session?.user?.role || "VIEWER";
+  const canAddMembers = userRole === "SUPER_ADMIN" || userRole === "ADMIN";
+  const canDelete = userRole === "SUPER_ADMIN" || userRole === "ADMIN";
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("th-TH", {
@@ -47,6 +56,23 @@ export default async function DivisionDetailPage({ params }: Props) {
           </h1>
         </div>
         <div className="flex gap-2 flex-wrap">
+          {canDelete && (
+            <DeleteDivisionButton
+              id={division.id}
+              name={division.nameLocal}
+              locale={locale}
+              hasUsers={division._count.users > 0}
+              hasBudgets={division._count.budgets > 0}
+              hasExpenses={division._count.expenses > 0}
+              userCount={division._count.users}
+              budgetCount={division._count.budgets}
+              expenseCount={division._count.expenses}
+              variant="outline"
+              size="default"
+              showIcon={true}
+              redirectOnSuccess={true}
+            />
+          )}
           <Link href={`/${locale}/dashboard/divisions/${division.id}/edit`}>
             <Button variant="outline">{t("common.edit")}</Button>
           </Link>
@@ -130,11 +156,19 @@ export default async function DivisionDetailPage({ params }: Props) {
       </Card>
 
       {/* Users in Division */}
-      {division.users && division.users.length > 0 && (
-        <Card>
-          <CardHeader>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
             <CardTitle>{t("divisions.members")}</CardTitle>
-          </CardHeader>
+            {canAddMembers && (
+              <AddMemberModal
+                divisionId={division.id}
+                divisionName={division.nameLocal}
+              />
+            )}
+          </div>
+        </CardHeader>
+        {division.users && division.users.length > 0 ? (
           <CardContent>
             {/* Desktop Table */}
             <div className="hidden md:block overflow-x-auto">
@@ -144,6 +178,7 @@ export default async function DivisionDetailPage({ params }: Props) {
                     <TableHead>{t("users.name")}</TableHead>
                     <TableHead>{t("users.email")}</TableHead>
                     <TableHead>{t("users.role")}</TableHead>
+                    {canAddMembers && <TableHead className="text-right">{t("common.actions")}</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -154,6 +189,17 @@ export default async function DivisionDetailPage({ params }: Props) {
                       <TableCell>
                         <Badge variant="outline">{user.role}</Badge>
                       </TableCell>
+                      {canAddMembers && (
+                        <TableCell className="text-right">
+                          <RemoveMemberButton
+                            userId={user.id}
+                            userName={user.name}
+                            userNameLocal={user.nameLocal}
+                            currentDivisionId={division.id}
+                            currentDivisionName={division.nameLocal}
+                          />
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))}
                 </TableBody>
@@ -164,17 +210,37 @@ export default async function DivisionDetailPage({ params }: Props) {
             <div className="md:hidden space-y-3">
               {division.users.map((user) => (
                 <div key={user.id} className="border rounded-lg p-3">
-                  <p className="font-medium">{user.name}</p>
-                  <p className="text-sm text-muted-foreground">{user.email}</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Badge variant="outline">{user.role}</Badge>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium">{user.name}</p>
+                      <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge variant="outline">{user.role}</Badge>
+                      </div>
+                    </div>
+                    {canAddMembers && (
+                      <RemoveMemberButton
+                        userId={user.id}
+                        userName={user.name}
+                        userNameLocal={user.nameLocal}
+                        currentDivisionId={division.id}
+                        currentDivisionName={division.nameLocal}
+                      />
+                    )}
                   </div>
                 </div>
               ))}
             </div>
           </CardContent>
-        </Card>
-      )}
+        ) : (
+          <CardContent>
+            <p className="text-center text-muted-foreground py-8">
+              No members in this division yet.
+              {canAddMembers && " Click 'Add Member' to assign users."}
+            </p>
+          </CardContent>
+        )}
+      </Card>
 
       {/* Recent Budgets */}
       {division.budgets && division.budgets.length > 0 && (

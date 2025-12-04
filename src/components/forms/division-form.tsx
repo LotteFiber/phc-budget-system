@@ -8,7 +8,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { createDivision, updateDivision } from "@/actions/division";
+
+const PREDEFINED_DIVISIONS = [
+  "กองสนับสนุนระบบสุขภาพปฐมภูมิ",
+  "กลุ่มอำนวยการ",
+  "กลุ่มพัฒนายุทธศาสตร์",
+  "กลุ่มพัฒนาระบบบริการปฐมภูมิ",
+  "กลุ่มเครือข่ายสุขภาพปฐมภูมิ",
+  "กลุ่มพัฒนากำลังคนปฐมภูมิ",
+  "กลุ่มระบบข้อมูลสารสนเทศ",
+];
 
 type Division = {
   id?: string;
@@ -27,13 +44,36 @@ export default function DivisionForm({ division, locale }: DivisionFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Check if the existing division name is in predefined list or custom
+  const isCustomName = division?.nameLocal && !PREDEFINED_DIVISIONS.includes(division.nameLocal);
+
   const [formData, setFormData] = useState({
     nameLocal: division?.nameLocal || "",
     descriptionLocal: division?.descriptionLocal || "",
   });
 
+  const [useCustomName, setUseCustomName] = useState(isCustomName);
+  const [selectedPredefined, setSelectedPredefined] = useState(
+    division?.nameLocal && PREDEFINED_DIVISIONS.includes(division.nameLocal)
+      ? division.nameLocal
+      : ""
+  );
+
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    setError("");
+  };
+
+  const handleSelectChange = (value: string) => {
+    if (value === "custom") {
+      setUseCustomName(true);
+      setSelectedPredefined("");
+      setFormData((prev) => ({ ...prev, nameLocal: "" }));
+    } else {
+      setUseCustomName(false);
+      setSelectedPredefined(value);
+      setFormData((prev) => ({ ...prev, nameLocal: value }));
+    }
     setError("");
   };
 
@@ -91,14 +131,59 @@ export default function DivisionForm({ division, locale }: DivisionFormProps) {
                 {t("divisions.name")} (ไทย){" "}
                 <span className="text-destructive">*</span>
               </Label>
-              <Input
-                id="nameLocal"
-                value={formData.nameLocal}
-                onChange={(e) => handleChange("nameLocal", e.target.value)}
-                placeholder="e.g., กองสาธารณสุขปฐมภูมิ"
-                required
-                disabled={isLoading}
-              />
+
+              {!useCustomName ? (
+                <>
+                  <Select
+                    value={selectedPredefined}
+                    onValueChange={handleSelectChange}
+                    disabled={isLoading}
+                  >
+                    <SelectTrigger id="nameLocal">
+                      <SelectValue placeholder="เลือกชื่อกลุ่มงาน..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PREDEFINED_DIVISIONS.map((name) => (
+                        <SelectItem key={name} value={name}>
+                          {name}
+                        </SelectItem>
+                      ))}
+                      <SelectItem value="custom">
+                        <span className="text-primary font-medium">
+                          ➕ กรอกชื่อเอง...
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-muted-foreground">
+                    เลือกจากรายการที่กำหนดไว้ หรือเลือก "กรอกชื่อเอง" เพื่อกรอกชื่อกลุ่มงานใหม่
+                  </p>
+                </>
+              ) : (
+                <>
+                  <Input
+                    id="nameLocal"
+                    value={formData.nameLocal}
+                    onChange={(e) => handleChange("nameLocal", e.target.value)}
+                    placeholder="กรอกชื่อกลุ่มงาน..."
+                    required
+                    disabled={isLoading}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setUseCustomName(false);
+                      setFormData((prev) => ({ ...prev, nameLocal: "" }));
+                    }}
+                    disabled={isLoading}
+                    className="text-sm"
+                  >
+                    ← กลับไปเลือกจากรายการ
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 
