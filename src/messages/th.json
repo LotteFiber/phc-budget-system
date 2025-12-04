@@ -232,6 +232,8 @@
     "expenseSummaryDesc": "รายละเอียดรายจ่ายแยกตามประเภท",
     "divisionAnalysis": "การวิเคราะห์ตามกลุ่มงาน",
     "divisionAnalysisDesc": "การใช้งบประมาณและแนวโน้มของแต่ละกลุ่มงาน",
+    "departmentAnalysis": "การวิเคราะห์ตามหน่วยงาน",
+    "departmentAnalysisDesc": "การใช้งบประมาณและประสิทธิภาพของแต่ละหน่วยงาน",
     "approvalTimeline": "รายงานระยะเวลาการอนุมัติ",
     "approvalTimelineDesc": "ติดตามเวลาการอนุมัติและจุดคอขวด",
     "generate": "สร้างรายงาน",

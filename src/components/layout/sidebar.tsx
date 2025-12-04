@@ -10,7 +10,6 @@ import {
   Wallet,
   Receipt,
   CheckSquare,
-  BarChart3,
   Building2,
   Users,
   X,
@@ -44,11 +43,6 @@ export default function Sidebar() {
       href: `/${locale}/dashboard/approvals`,
       label: t("nav.approvals"),
       icon: CheckSquare,
-    },
-    {
-      href: `/${locale}/dashboard/reports`,
-      label: t("nav.reports"),
-      icon: BarChart3,
     },
     {
       href: `/${locale}/dashboard/divisions`,
@@ -88,12 +82,10 @@ export default function Sidebar() {
       >
         {/* Close button for mobile */}
         <div className="flex items-center justify-between p-4 md:hidden">
-          <span className="text-lg font-semibold">{t("nav.menu") || "Menu"}</span>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsOpen(false)}
-          >
+          <span className="text-lg font-semibold">
+            {t("nav.menu") || "Menu"}
+          </span>
+          <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
             <X className="h-5 w-5" />
           </Button>
         </div>

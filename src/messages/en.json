@@ -232,6 +232,8 @@
     "expenseSummaryDesc": "Detailed breakdown of expenses across categories",
     "divisionAnalysis": "Division Analysis",
     "divisionAnalysisDesc": "Division-wise budget utilization and trends",
+    "departmentAnalysis": "Department Analysis",
+    "departmentAnalysisDesc": "Department-wise budget utilization and performance",
     "approvalTimeline": "Approval Timeline Report",
     "approvalTimelineDesc": "Track approval times and bottlenecks",
     "generate": "Generate Report",
