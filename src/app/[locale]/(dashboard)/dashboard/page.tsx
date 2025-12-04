@@ -21,6 +21,12 @@ import {
   Building2,
   Clock,
 } from "lucide-react";
+import {
+  BudgetSummaryChart,
+  ExpenseSummaryChart,
+  DepartmentAnalysisChart,
+  ApprovalTimelineChart,
+} from "@/components/charts/dashboard-charts";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -151,6 +157,12 @@ export default async function DashboardPage({ params }: Props) {
               </div>
             </div>
 
+            {/* Budget Summary Chart */}
+            <div className="mt-6">
+              <h4 className="font-semibold mb-3">Budget Allocation Overview</h4>
+              <BudgetSummaryChart data={budgetReport.data.totals} />
+            </div>
+
             {budgetReport.data.summary.length > 0 && (
               <div className="mt-6">
                 <h4 className="font-semibold mb-3">
@@ -244,6 +256,12 @@ export default async function DashboardPage({ params }: Props) {
                   {formatCurrency(expenseReport.data.totals.pendingAmount)}
                 </p>
               </div>
+            </div>
+
+            {/* Expense Summary Chart */}
+            <div className="mt-6 mb-6">
+              <h4 className="font-semibold mb-3">Expenses by Category</h4>
+              <ExpenseSummaryChart byCategory={expenseReport.data.byCategory} />
             </div>
 
             <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
@@ -345,6 +363,14 @@ export default async function DashboardPage({ params }: Props) {
               </div>
             </div>
 
+            {/* Department Analysis Chart */}
+            <div className="mt-6 mb-6">
+              <h4 className="font-semibold mb-3">Department Utilization</h4>
+              <DepartmentAnalysisChart
+                analysis={departmentReport.data.analysis}
+              />
+            </div>
+
             <div className="space-y-2">
               {departmentReport.data.analysis
                 .slice(0, 5)
@@ -437,6 +463,14 @@ export default async function DashboardPage({ params }: Props) {
                   h
                 </p>
               </div>
+            </div>
+
+            {/* Approval Timeline Chart */}
+            <div className="mt-6 mb-6">
+              <h4 className="font-semibold mb-3">Approval Duration Trends</h4>
+              <ApprovalTimelineChart
+                byLevel={approvalReport.data.statistics.byLevel}
+              />
             </div>
 
             {/* By Level */}
