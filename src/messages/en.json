@@ -148,6 +148,7 @@
       "projectName": "Project",
       "budgetAmount": "Budget",
       "disbursed": "Disbursed",
+      "deleteConfirmation": "Are you sure you want to delete this project? This action cannot be undone.",
       "balance": "Balance",
       "viewDetails": "View Details",
       "total": "Total",

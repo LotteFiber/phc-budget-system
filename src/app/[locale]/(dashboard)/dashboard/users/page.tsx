@@ -90,7 +90,7 @@ export default async function UsersPage({ params }: Props) {
                   <TableRow key={user.id}>
                     <TableCell className="font-medium">{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.division?.name || "-"}</TableCell>
+                    <TableCell>{user.division?.nameLocal || "-"}</TableCell>
                     <TableCell>{getRoleBadge(user.role)}</TableCell>
                     <TableCell>-</TableCell>
                     <TableCell className="text-right">
@@ -125,7 +125,7 @@ export default async function UsersPage({ params }: Props) {
 
                     <div className="text-sm">
                       <p className="text-muted-foreground">{t("users.division")}</p>
-                      <p className="font-medium truncate">{user.division?.name || "-"}</p>
+                      <p className="font-medium truncate">{user.division?.nameLocal || "-"}</p>
                     </div>
 
                     <div className="flex gap-2 pt-2">

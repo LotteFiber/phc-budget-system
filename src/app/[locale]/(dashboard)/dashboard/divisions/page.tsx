@@ -2,7 +2,6 @@ import { getTranslations } from "next-intl/server";
 import { getDivisions } from "@/actions/division";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Building2, Users, Wallet } from "lucide-react";
 import Link from "next/link";
 
@@ -45,25 +44,17 @@ export default async function DivisionsPage({ params }: Props) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <CardTitle className="text-lg truncate">
-                        {div.name}
+                        {div.nameLocal}
                       </CardTitle>
-                      {div.nameLocal && (
-                        <p className="text-sm text-muted-foreground truncate">
-                          {div.nameLocal}
-                        </p>
-                      )}
                     </div>
                   </div>
-                  <Badge variant="outline" className="ml-2">
-                    {div.code}
-                  </Badge>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {div.description && (
+                  {div.descriptionLocal && (
                     <p className="text-sm text-muted-foreground line-clamp-2">
-                      {div.description}
+                      {div.descriptionLocal}
                     </p>
                   )}
                   <div className="grid grid-cols-2 gap-2 text-sm">

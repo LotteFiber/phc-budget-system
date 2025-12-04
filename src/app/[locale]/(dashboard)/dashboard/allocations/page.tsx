@@ -1,7 +1,10 @@
 import { getTranslations } from "next-intl/server";
 import { getBudgetAllocations } from "@/actions/budget-allocation";
-import { getDivisions, getBudgetCategories, getOutputs } from "@/actions/helpers";
-import { auth } from "@/lib/auth";
+import {
+  getDivisions,
+  getBudgetCategories,
+  getOutputs,
+} from "@/actions/helpers";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,16 +16,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import AllocationFilters from "@/components/allocations/allocation-filters";
+import DisbursementModal from "@/components/allocations/disbursement-modal";
 
 type Props = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-export default async function BudgetAllocationsPage({ params, searchParams }: Props) {
+export default async function BudgetAllocationsPage({
+  params,
+  searchParams,
+}: Props) {
   const { locale } = await params;
   const t = await getTranslations({ locale });
-  const session = await auth();
 
   const searchParamsResolved = await searchParams;
   const divisionId = searchParamsResolved.divisionId as string | undefined;
@@ -37,11 +43,15 @@ export default async function BudgetAllocationsPage({ params, searchParams }: Pr
 
   const divisions = divisionsResult.success ? divisionsResult.data || [] : [];
   const outputs = outputsResult.success ? outputsResult.data || [] : [];
-  const categories = categoriesResult.success ? categoriesResult.data || [] : [];
+  const categories = categoriesResult.success
+    ? categoriesResult.data || []
+    : [];
 
   // Fetch budget allocations
   const allocationsResult = await getBudgetAllocations({});
-  const allAllocations = allocationsResult.success ? allocationsResult.data || [] : [];
+  const allAllocations = allocationsResult.success
+    ? allocationsResult.data || []
+    : [];
 
   // Prepare allocations for client component (only id and nameLocal)
   const allocationsForFilter = allAllocations.map((a) => ({
@@ -49,12 +59,43 @@ export default async function BudgetAllocationsPage({ params, searchParams }: Pr
     nameLocal: a.nameLocal,
   }));
 
+  // Serialize allocations for DisbursementModal (convert Decimal to number)
+  const serializedAllocations = allAllocations.map((a) => ({
+    id: a.id,
+    nameLocal: a.nameLocal,
+    remainingAmount: a.remainingAmount,
+    budget: {
+      id: a.budget.id,
+      categoryId: a.budget.categoryId,
+      divisionId: a.budget.divisionId,
+      division: {
+        nameLocal: a.budget.division.nameLocal,
+      },
+    },
+  }));
+
   // Filter allocations based on search params
   const allocations = allAllocations.filter((allocation) => {
-    if (divisionId && divisionId !== "all" && allocation.budget.divisionId !== divisionId) return false;
-    if (outputId && outputId !== "all" && allocation.budget.outputId !== outputId) return false;
-    if (projectId && projectId !== "all" && allocation.id !== projectId) return false;
-    if (categoryId && categoryId !== "all" && allocation.budget.categoryId !== categoryId) return false;
+    if (
+      divisionId &&
+      divisionId !== "all" &&
+      allocation.budget.divisionId !== divisionId
+    )
+      return false;
+    if (
+      outputId &&
+      outputId !== "all" &&
+      allocation.budget.outputId !== outputId
+    )
+      return false;
+    if (projectId && projectId !== "all" && allocation.id !== projectId)
+      return false;
+    if (
+      categoryId &&
+      categoryId !== "all" &&
+      allocation.budget.categoryId !== categoryId
+    )
+      return false;
     return true;
   });
 
@@ -67,7 +108,10 @@ export default async function BudgetAllocationsPage({ params, searchParams }: Pr
   };
 
   // Calculate totals
-  const totalBudget = allocations.reduce((sum, a) => sum + Number(a.allocatedAmount), 0);
+  const totalBudget = allocations.reduce(
+    (sum, a) => sum + Number(a.allocatedAmount),
+    0
+  );
   const totalSpent = allocations.reduce((sum, a) => sum + a.spentAmount, 0);
   const totalRemaining = totalBudget - totalSpent;
 
@@ -97,9 +141,7 @@ export default async function BudgetAllocationsPage({ params, searchParams }: Pr
               {t("budget.allocation.addProject")}
             </Button>
           </Link>
-          <Button size="lg" variant="outline" className="min-w-[180px]">
-            {t("budget.allocation.disburse")}
-          </Button>
+          <DisbursementModal allocations={serializedAllocations} />
         </div>
       </div>
 
@@ -116,14 +158,24 @@ export default async function BudgetAllocationsPage({ params, searchParams }: Pr
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[100px]">{t("budget.allocation.code")}</TableHead>
+                  <TableHead className="w-[100px]">
+                    {t("budget.allocation.code")}
+                  </TableHead>
                   <TableHead>{t("budget.allocation.projectName")}</TableHead>
                   <TableHead>{t("budget.outputProject")}</TableHead>
                   <TableHead>{t("budget.expenditureCategory")}</TableHead>
-                  <TableHead className="text-right">{t("budget.allocation.budgetAmount")}</TableHead>
-                  <TableHead className="text-right">{t("budget.allocation.disbursed")}</TableHead>
-                  <TableHead className="text-right">{t("budget.allocation.balance")}</TableHead>
-                  <TableHead className="text-center">{t("common.actions")}</TableHead>
+                  <TableHead className="text-right">
+                    {t("budget.allocation.budgetAmount")}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t("budget.allocation.disbursed")}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t("budget.allocation.balance")}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t("common.actions")}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -164,7 +216,9 @@ export default async function BudgetAllocationsPage({ params, searchParams }: Pr
                       </span>
                     </TableCell>
                     <TableCell className="text-center">
-                      <Link href={`/${locale}/dashboard/allocations/${allocation.id}`}>
+                      <Link
+                        href={`/${locale}/dashboard/allocations/${allocation.id}`}
+                      >
                         <Button variant="ghost" size="sm">
                           {t("budget.allocation.viewDetails")}
                         </Button>

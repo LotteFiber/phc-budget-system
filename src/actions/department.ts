@@ -7,10 +7,7 @@ import { UserRole } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 const departmentSchema = z.object({
-  code: z.string().min(1, "Department code is required"),
-  name: z.string().min(1, "Department name is required"),
-  nameLocal: z.string().optional(),
-  description: z.string().optional(),
+  nameLocal: z.string().min(1, "Department name (Thai) is required"),
   descriptionLocal: z.string().optional(),
 });
 
@@ -33,7 +30,7 @@ export async function getDepartments() {
         },
       },
       orderBy: {
-        name: "asc",
+        nameLocal: "asc",
       },
     });
 
@@ -105,22 +102,9 @@ export async function createDepartment(data: DepartmentInput) {
     // Validate input
     const validatedData = departmentSchema.parse(data);
 
-    // Check if department code already exists
-    const existingDepartment = await prisma.division.findUnique({
-      where: { code: validatedData.code },
-    });
-
-    if (existingDepartment) {
-      return { success: false, error: "Department code already exists" };
-    }
-
-
     const department = await prisma.division.create({
       data: {
-        code: validatedData.code,
-        name: validatedData.name,
-        nameLocal: validatedData.nameLocal || null,
-        description: validatedData.description || null,
+        nameLocal: validatedData.nameLocal,
         descriptionLocal: validatedData.descriptionLocal || null,
       },
     });
@@ -160,25 +144,10 @@ export async function updateDepartment(id: string, data: DepartmentInput) {
       return { success: false, error: "Department not found" };
     }
 
-    // Check if code is being changed and if it already exists
-    if (validatedData.code !== existingDepartment.code) {
-      const duplicateCode = await prisma.division.findUnique({
-        where: { code: validatedData.code },
-      });
-
-      if (duplicateCode) {
-        return { success: false, error: "Department code already exists" };
-      }
-    }
-
-
     const department = await prisma.division.update({
       where: { id },
       data: {
-        code: validatedData.code,
-        name: validatedData.name,
-        nameLocal: validatedData.nameLocal || null,
-        description: validatedData.description || null,
+        nameLocal: validatedData.nameLocal,
         descriptionLocal: validatedData.descriptionLocal || null,
       },
     });
@@ -300,7 +269,7 @@ export async function getDepartmentStatistics(departmentId: string) {
     );
 
     const statistics = {
-      departmentName: department.name,
+      departmentName: department.nameLocal || "Unknown Department",
       totalUsers: department._count.users,
       totalBudgets: department._count.budgets,
       totalExpenses: department._count.expenses,

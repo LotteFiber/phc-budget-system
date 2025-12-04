@@ -42,8 +42,7 @@ export default async function DepartmentDetailPage({ params }: Props) {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{department.name}</h1>
-          {department.nameLocal && <p className="text-muted-foreground">{department.nameLocal}</p>}
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{department.nameLocal}</h1>
         </div>
         <div className="flex gap-2 flex-wrap">
           <Link href={`/${locale}/dashboard/departments/${department.id}/edit`}>
@@ -104,30 +103,15 @@ export default async function DepartmentDetailPage({ params }: Props) {
           <CardTitle>{t("departments.title")} {t("common.details")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-muted-foreground">{t("departments.code")}</p>
-              <p className="font-medium">{department.code}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">{t("departments.name")}</p>
-              <p className="font-medium">{department.name}</p>
-            </div>
-            {department.nameLocal && (
-              <div>
-                <p className="text-sm text-muted-foreground">Local Name</p>
-                <p className="font-medium">{department.nameLocal}</p>
-              </div>
-            )}
+          <div>
+            <p className="text-sm text-muted-foreground">{t("departments.name")}</p>
+            <p className="font-medium">{department.nameLocal}</p>
           </div>
 
-          {department.description && (
+          {department.descriptionLocal && (
             <div>
               <p className="text-sm text-muted-foreground mb-1">{t("common.description")}</p>
-              <p className="text-sm">{department.description}</p>
-              {department.descriptionLocal && (
-                <p className="text-sm text-muted-foreground mt-1">{department.descriptionLocal}</p>
-              )}
+              <p className="text-sm">{department.descriptionLocal}</p>
             </div>
           )}
         </CardContent>

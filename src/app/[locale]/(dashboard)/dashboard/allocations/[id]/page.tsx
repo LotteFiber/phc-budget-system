@@ -15,6 +15,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ArrowLeft, Edit, Plus } from "lucide-react";
+import DeleteAllocationButton from "@/components/allocations/delete-allocation-button";
+import ExpenseActions from "@/components/expenses/expense-actions";
 
 type Props = {
   params: Promise<{ locale: string; id: string }>;
@@ -37,6 +39,10 @@ export default async function BudgetAllocationDetailPage({ params }: Props) {
     userRole === "SUPER_ADMIN" ||
     userRole === "ADMIN" ||
     allocation.createdById === session?.user?.id;
+
+  const canDelete = userRole === "SUPER_ADMIN" || userRole === "ADMIN";
+
+  const hasExpenses = allocation.expenses.length > 0;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("th-TH", {
@@ -138,6 +144,13 @@ export default async function BudgetAllocationDetailPage({ params }: Props) {
               </Button>
             </Link>
           )}
+          {canDelete && (
+            <DeleteAllocationButton
+              id={id}
+              locale={locale}
+              hasExpenses={hasExpenses}
+            />
+          )}
         </div>
       </div>
 
@@ -179,9 +192,7 @@ export default async function BudgetAllocationDetailPage({ params }: Props) {
                 </p>
                 <p
                   className={`font-medium ${
-                    remainingAmount < 0
-                      ? "text-red-600 dark:text-red-400"
-                      : ""
+                    remainingAmount < 0 ? "text-red-600 dark:text-red-400" : ""
                   }`}
                 >
                   {formatCurrency(remainingAmount)}
@@ -303,9 +314,7 @@ export default async function BudgetAllocationDetailPage({ params }: Props) {
           <div className="flex items-center justify-between">
             <CardTitle>{t("expense.title")}</CardTitle>
             {allocation.status === "ACTIVE" && (
-              <Link
-                href={`/${locale}/dashboard/allocations/${id}/expense/new`}
-              >
+              <Link href={`/${locale}/dashboard/allocations/${id}/expense/new`}>
                 <Button size="sm" className="gap-2">
                   <Plus className="h-4 w-4" />
                   {t("budget.allocation.createExpense")}
@@ -355,13 +364,24 @@ export default async function BudgetAllocationDetailPage({ params }: Props) {
                           {getExpenseStatusBadge(expense.status)}
                         </TableCell>
                         <TableCell className="text-right">
-                          <Link
-                            href={`/${locale}/dashboard/allocations/${id}/expense/${expense.id}`}
-                          >
-                            <Button variant="ghost" size="sm">
-                              {t("common.view")}
-                            </Button>
-                          </Link>
+                          <ExpenseActions
+                            expense={expense}
+                            allocationId={id}
+                            locale={locale}
+                            canEdit={
+                              userRole === "SUPER_ADMIN" ||
+                              userRole === "ADMIN" ||
+                              (expense.createdById === session?.user?.id &&
+                                expense.status !== "APPROVED" &&
+                                expense.status !== "PAID")
+                            }
+                            canDelete={
+                              expense.status === "DRAFT" &&
+                              (userRole === "SUPER_ADMIN" ||
+                                userRole === "ADMIN" ||
+                                expense.createdById === session?.user?.id)
+                            }
+                          />
                         </TableCell>
                       </TableRow>
                     ))}

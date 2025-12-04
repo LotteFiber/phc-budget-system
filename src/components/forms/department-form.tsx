@@ -19,10 +19,7 @@ import { createDepartment, updateDepartment } from "@/actions/department";
 
 type Department = {
   id?: string;
-  code: string;
-  name: string;
-  nameLocal?: string | null;
-  description?: string | null;
+  nameLocal: string;
   descriptionLocal?: string | null;
 };
 
@@ -41,10 +38,7 @@ export default function DepartmentForm({
   const [error, setError] = useState("");
 
   const [formData, setFormData] = useState({
-    code: department?.code || "",
-    name: department?.name || "",
     nameLocal: department?.nameLocal || "",
-    description: department?.description || "",
     descriptionLocal: department?.descriptionLocal || "",
   });
 
@@ -60,10 +54,7 @@ export default function DepartmentForm({
 
     try {
       const data = {
-        code: formData.code,
-        name: formData.name,
-        nameLocal: formData.nameLocal || undefined,
-        description: formData.description || undefined,
+        nameLocal: formData.nameLocal,
         descriptionLocal: formData.descriptionLocal || undefined,
       };
 
@@ -99,64 +90,22 @@ export default function DepartmentForm({
             </div>
           )}
 
-          <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-            {/* Code */}
-            <div className="space-y-2">
-              <Label htmlFor="code">
-                {t("departments.code")} <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="code"
-                value={formData.code}
-                onChange={(e) => handleChange("code", e.target.value)}
-                placeholder="e.g., PHC-001"
-                required
-                disabled={isLoading}
-              />
-            </div>
-
-            {/* Name (English) */}
-            <div className="space-y-2">
-              <Label htmlFor="name">
-                {t("departments.name")} (English) <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleChange("name", e.target.value)}
-                placeholder="e.g., Primary Health Care Division"
-                required
-                disabled={isLoading}
-              />
-            </div>
-
-            {/* Name (Local) */}
-            <div className="space-y-2">
-              <Label htmlFor="nameLocal">{t("departments.name")} (ไทย)</Label>
-              <Input
-                id="nameLocal"
-                value={formData.nameLocal}
-                onChange={(e) => handleChange("nameLocal", e.target.value)}
-                placeholder="e.g., กองสาธารณสุขปฐมภูมิ"
-                disabled={isLoading}
-              />
-            </div>
-          </div>
-
-          {/* Description (English) */}
+          {/* Name (Thai) */}
           <div className="space-y-2">
-            <Label htmlFor="description">{t("common.description")} (English)</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => handleChange("description", e.target.value)}
-              placeholder="Enter department description..."
-              rows={3}
+            <Label htmlFor="nameLocal">
+              {t("departments.name")} (ไทย) <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="nameLocal"
+              value={formData.nameLocal}
+              onChange={(e) => handleChange("nameLocal", e.target.value)}
+              placeholder="e.g., กองสาธารณสุขปฐมภูมิ"
+              required
               disabled={isLoading}
             />
           </div>
 
-          {/* Description (Local) */}
+          {/* Description (Thai) */}
           <div className="space-y-2">
             <Label htmlFor="descriptionLocal">{t("common.description")} (ไทย)</Label>
             <Textarea

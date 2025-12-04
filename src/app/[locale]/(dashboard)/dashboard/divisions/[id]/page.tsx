@@ -118,17 +118,12 @@ export default async function DivisionDetailPage({ params }: Props) {
             </div>
           </div>
 
-          {division.description && (
+          {division.descriptionLocal && (
             <div>
               <p className="text-sm text-muted-foreground mb-1">
                 {t("common.description")}
               </p>
-              <p className="text-sm">{division.description}</p>
-              {division.descriptionLocal && (
-                <p className="text-sm text-muted-foreground mt-1">
-                  {division.descriptionLocal}
-                </p>
-              )}
+              <p className="text-sm">{division.descriptionLocal}</p>
             </div>
           )}
         </CardContent>
