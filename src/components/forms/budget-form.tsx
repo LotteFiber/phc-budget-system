@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { createBudget, updateBudget } from "@/actions/budget";
 
 type BudgetCategory = {
@@ -91,7 +92,16 @@ export default function BudgetForm({
     outputId: initialData?.outputId || "",
     activityId: initialData?.activityId || "",
     allocatedAmount: initialData?.allocatedAmount || "",
+    // Custom name fields
+    customPlanName: "",
+    customOutputName: "",
+    customActivityName: "",
   });
+
+  // Toggle states for custom inputs
+  const [useCustomPlan, setUseCustomPlan] = useState(false);
+  const [useCustomOutput, setUseCustomOutput] = useState(false);
+  const [useCustomActivity, setUseCustomActivity] = useState(false);
 
   // Filter outputs based on selected plan
   const filteredOutputs = formData.planId
@@ -112,10 +122,14 @@ export default function BudgetForm({
       const data = {
         fiscalYear: Number(formData.fiscalYear),
         categoryId: formData.categoryId,
-        planId: formData.planId,
-        outputId: formData.outputId,
-        activityId: formData.activityId,
+        planId: useCustomPlan ? "" : formData.planId,
+        outputId: useCustomOutput ? "" : formData.outputId,
+        activityId: useCustomActivity ? "" : formData.activityId,
         allocatedAmount: Number(formData.allocatedAmount),
+        // Custom name fields (only if using custom)
+        customPlanName: useCustomPlan ? formData.customPlanName : undefined,
+        customOutputName: useCustomOutput ? formData.customOutputName : undefined,
+        customActivityName: useCustomActivity ? formData.customActivityName : undefined,
       };
 
       const result = initialData
@@ -186,78 +200,176 @@ export default function BudgetForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="planId">{t("budget.plan")} *</Label>
-          <Select
-            value={formData.planId}
-            onValueChange={(value) =>
-              setFormData({
-                ...formData,
-                planId: value,
-                outputId: "", // Reset output when plan changes
-                activityId: "", // Reset activity when plan changes
-              })
-            }
-            disabled={isLoading}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={t("budget.selectPlan")} />
-            </SelectTrigger>
-            <SelectContent>
-              {plans.map((plan) => (
-                <SelectItem key={plan.id} value={plan.id}>
-                  {plan.code} - {plan.nameLocal}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="planId">{t("budget.plan")} *</Label>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="useCustomPlan"
+                checked={useCustomPlan}
+                onCheckedChange={(checked: boolean) => {
+                  setUseCustomPlan(checked);
+                  if (checked) {
+                    setFormData({ ...formData, planId: "" });
+                    // Reset downstream fields
+                    setUseCustomOutput(true);
+                    setUseCustomActivity(true);
+                  }
+                }}
+                disabled={isLoading}
+              />
+              <Label htmlFor="useCustomPlan" className="text-sm font-normal cursor-pointer">
+                {t("budget.createCustom")}
+              </Label>
+            </div>
+          </div>
+          {useCustomPlan ? (
+            <Input
+              id="customPlanName"
+              value={formData.customPlanName}
+              onChange={(e) =>
+                setFormData({ ...formData, customPlanName: e.target.value })
+              }
+              placeholder={t("budget.enterPlanName")}
+              required
+              disabled={isLoading}
+            />
+          ) : (
+            <Select
+              value={formData.planId}
+              onValueChange={(value) =>
+                setFormData({
+                  ...formData,
+                  planId: value,
+                  outputId: "", // Reset output when plan changes
+                  activityId: "", // Reset activity when plan changes
+                })
+              }
+              disabled={isLoading}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t("budget.selectPlan")} />
+              </SelectTrigger>
+              <SelectContent>
+                {plans.map((plan) => (
+                  <SelectItem key={plan.id} value={plan.id}>
+                    {plan.code} - {plan.nameLocal}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="outputId">{t("budget.outputProject")} *</Label>
-          <Select
-            value={formData.outputId}
-            onValueChange={(value) =>
-              setFormData({
-                ...formData,
-                outputId: value,
-                activityId: "", // Reset activity when output changes
-              })
-            }
-            disabled={isLoading || !formData.planId}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={t("budget.selectOutput")} />
-            </SelectTrigger>
-            <SelectContent>
-              {filteredOutputs.map((output) => (
-                <SelectItem key={output.id} value={output.id}>
-                  {output.code} - {output.nameLocal}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="outputId">{t("budget.outputProject")} *</Label>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="useCustomOutput"
+                checked={useCustomOutput}
+                onCheckedChange={(checked: boolean) => {
+                  setUseCustomOutput(checked);
+                  if (checked) {
+                    setFormData({ ...formData, outputId: "" });
+                    // Reset downstream field
+                    setUseCustomActivity(true);
+                  }
+                }}
+                disabled={isLoading || useCustomPlan}
+              />
+              <Label htmlFor="useCustomOutput" className="text-sm font-normal cursor-pointer">
+                {t("budget.createCustom")}
+              </Label>
+            </div>
+          </div>
+          {useCustomOutput ? (
+            <Input
+              id="customOutputName"
+              value={formData.customOutputName}
+              onChange={(e) =>
+                setFormData({ ...formData, customOutputName: e.target.value })
+              }
+              placeholder={t("budget.enterOutputName")}
+              required
+              disabled={isLoading}
+            />
+          ) : (
+            <Select
+              value={formData.outputId}
+              onValueChange={(value) =>
+                setFormData({
+                  ...formData,
+                  outputId: value,
+                  activityId: "", // Reset activity when output changes
+                })
+              }
+              disabled={isLoading || !formData.planId}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t("budget.selectOutput")} />
+              </SelectTrigger>
+              <SelectContent>
+                {filteredOutputs.map((output) => (
+                  <SelectItem key={output.id} value={output.id}>
+                    {output.code} - {output.nameLocal}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="activityId">{t("budget.activity")} *</Label>
-          <Select
-            value={formData.activityId}
-            onValueChange={(value) =>
-              setFormData({ ...formData, activityId: value })
-            }
-            disabled={isLoading || !formData.outputId}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={t("budget.selectActivity")} />
-            </SelectTrigger>
-            <SelectContent>
-              {filteredActivities.map((activity) => (
-                <SelectItem key={activity.id} value={activity.id}>
-                  {activity.code} - {activity.nameLocal}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="activityId">{t("budget.activity")} *</Label>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="useCustomActivity"
+                checked={useCustomActivity}
+                onCheckedChange={(checked: boolean) => {
+                  setUseCustomActivity(checked);
+                  if (checked) {
+                    setFormData({ ...formData, activityId: "" });
+                  }
+                }}
+                disabled={isLoading || useCustomOutput}
+              />
+              <Label htmlFor="useCustomActivity" className="text-sm font-normal cursor-pointer">
+                {t("budget.createCustom")}
+              </Label>
+            </div>
+          </div>
+          {useCustomActivity ? (
+            <Input
+              id="customActivityName"
+              value={formData.customActivityName}
+              onChange={(e) =>
+                setFormData({ ...formData, customActivityName: e.target.value })
+              }
+              placeholder={t("budget.enterActivityName")}
+              required
+              disabled={isLoading}
+            />
+          ) : (
+            <Select
+              value={formData.activityId}
+              onValueChange={(value) =>
+                setFormData({ ...formData, activityId: value })
+              }
+              disabled={isLoading || !formData.outputId}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t("budget.selectActivity")} />
+              </SelectTrigger>
+              <SelectContent>
+                {filteredActivities.map((activity) => (
+                  <SelectItem key={activity.id} value={activity.id}>
+                    {activity.code} - {activity.nameLocal}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
         <div className="space-y-2">

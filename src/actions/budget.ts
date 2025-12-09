@@ -10,11 +10,24 @@ import { z } from "zod";
 const budgetFormSchema = z.object({
   fiscalYear: z.number().int().min(2543).max(2643), // Buddhist calendar years
   categoryId: z.string().min(1, "Category is required"),
-  planId: z.string().min(1, "Plan is required"),
-  outputId: z.string().min(1, "Output is required"),
-  activityId: z.string().min(1, "Activity is required"),
+  planId: z.string().optional(),
+  outputId: z.string().optional(),
+  activityId: z.string().optional(),
   allocatedAmount: z.number().positive("Amount must be positive"),
-});
+  // Custom name fields
+  customPlanName: z.string().optional(),
+  customOutputName: z.string().optional(),
+  customActivityName: z.string().optional(),
+}).refine(
+  (data) => data.planId || data.customPlanName,
+  { message: "Plan is required", path: ["planId"] }
+).refine(
+  (data) => data.outputId || data.customOutputName,
+  { message: "Output is required", path: ["outputId"] }
+).refine(
+  (data) => data.activityId || data.customActivityName,
+  { message: "Activity is required", path: ["activityId"] }
+);
 
 // Full schema for database operations
 const budgetSchema = z.object({
@@ -224,22 +237,81 @@ export async function createBudget(data: BudgetFormInput) {
     // Validate form input
     const formData = budgetFormSchema.parse(data);
 
-    // Fetch related data to generate names
+    let planId = formData.planId;
+    let outputId = formData.outputId;
+    let activityId = formData.activityId;
+    let planNameLocal = "";
+    let activityNameLocal = "";
+
+    // Create custom Plan if needed
+    if (formData.customPlanName && !planId) {
+      const timestamp = Date.now().toString(36).toUpperCase();
+      const newPlan = await prisma.plan.create({
+        data: {
+          code: `PLN-${timestamp}`,
+          name: formData.customPlanName,
+          nameLocal: formData.customPlanName,
+        },
+      });
+      planId = newPlan.id;
+      planNameLocal = newPlan.nameLocal;
+    }
+
+    // Create custom Output if needed
+    if (formData.customOutputName && !outputId) {
+      if (!planId) {
+        return { success: false, error: "Plan is required to create Output" };
+      }
+      const timestamp = Date.now().toString(36).toUpperCase();
+      const newOutput = await prisma.output.create({
+        data: {
+          code: `OUT-${timestamp}`,
+          name: formData.customOutputName,
+          nameLocal: formData.customOutputName,
+          planId: planId,
+        },
+      });
+      outputId = newOutput.id;
+    }
+
+    // Create custom Activity if needed
+    if (formData.customActivityName && !activityId) {
+      if (!outputId) {
+        return { success: false, error: "Output is required to create Activity" };
+      }
+      const timestamp = Date.now().toString(36).toUpperCase();
+      const newActivity = await prisma.activity.create({
+        data: {
+          code: `ACT-${timestamp}`,
+          name: formData.customActivityName,
+          nameLocal: formData.customActivityName,
+          outputId: outputId,
+        },
+      });
+      activityId = newActivity.id;
+      activityNameLocal = newActivity.nameLocal;
+    }
+
+    // Fetch related data to generate names (for existing selections)
     const [plan, output, activity] = await Promise.all([
-      prisma.plan.findUnique({ where: { id: formData.planId } }),
-      prisma.output.findUnique({ where: { id: formData.outputId } }),
-      prisma.activity.findUnique({ where: { id: formData.activityId } }),
+      planId ? prisma.plan.findUnique({ where: { id: planId } }) : null,
+      outputId ? prisma.output.findUnique({ where: { id: outputId } }) : null,
+      activityId ? prisma.activity.findUnique({ where: { id: activityId } }) : null,
     ]);
 
     if (!plan || !output || !activity) {
-      return { success: false, error: "Invalid plan, output, or activity selected" };
+      return { success: false, error: "Invalid plan, output, or activity" };
     }
+
+    // Use fetched names if not already set
+    if (!planNameLocal) planNameLocal = plan.nameLocal;
+    if (!activityNameLocal) activityNameLocal = activity.nameLocal;
 
     // Generate auto-filled values
     const timestamp = Date.now().toString(36).toUpperCase();
     const code = `BUD-${formData.fiscalYear}-${timestamp}`;
-    const name = `${plan.nameLocal} - ${activity.nameLocal}`;
-    const nameLocal = `${plan.nameLocal} - ${activity.nameLocal}`;
+    const name = `${planNameLocal} - ${activityNameLocal}`;
+    const nameLocal = `${planNameLocal} - ${activityNameLocal}`;
 
     // Thai fiscal year: Oct 1 to Sep 30
     // Convert Buddhist year to Gregorian (subtract 543)
@@ -257,9 +329,9 @@ export async function createBudget(data: BudgetFormInput) {
       fiscalYear: formData.fiscalYear,
       divisionId: session.user.divisionId,
       categoryId: formData.categoryId,
-      planId: formData.planId,
-      outputId: formData.outputId,
-      activityId: formData.activityId,
+      planId: planId!,
+      outputId: outputId!,
+      activityId: activityId!,
       allocatedAmount: formData.allocatedAmount,
       startDate,
       endDate,

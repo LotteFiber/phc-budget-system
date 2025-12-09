@@ -125,57 +125,62 @@ export default async function BudgetsPage({ params, searchParams }: Props) {
           {/* Mobile Card View */}
           <div className="md:hidden space-y-4">
             {budgets.map((budget) => (
-              <Link
+              <div
                 key={budget.id}
-                href={`/${locale}/dashboard/budgets/${budget.id}`}
-                className="block"
+                className="rounded-lg border bg-card p-4"
               >
-                <div className="rounded-lg border bg-card p-4 hover:bg-accent/50 transition-colors">
-                  <div className="mb-3">
-                    <p className="font-normal">{budget.name}</p>
+                <div className="flex items-start justify-between mb-3">
+                  <Link href={`/${locale}/dashboard/budgets/${budget.id}`} className="flex-1">
+                    <p className="font-normal hover:text-primary">{budget.name}</p>
                     <p className="text-sm text-muted-foreground mt-1">
                       {budget.code}
                     </p>
-                  </div>
+                  </Link>
+                  <BudgetActions
+                    budgetId={budget.id}
+                    budgetCode={budget.code}
+                    locale={locale}
+                    userRole={userRole}
+                  />
+                </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <p className="text-muted-foreground">
-                        {t("budget.allocated")}
-                      </p>
-                      <p className="font-semibold">
-                        {formatCurrency(Number(budget.allocatedAmount))}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">
-                        {t("budget.spent")}
-                      </p>
-                      <p className="font-semibold">
-                        {formatCurrency(budget.spentAmount)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">
-                        {t("budget.remaining")}
-                      </p>
-                      <p
-                        className={`font-semibold ${
-                          budget.remainingAmount < 0 ? "text-red-600" : ""
-                        }`}
-                      >
-                        {formatCurrency(budget.remainingAmount)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">
-                        {t("budget.fiscalYear")}
-                      </p>
-                      <p className="font-semibold">{budget.fiscalYear}</p>
-                    </div>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">
+                      {t("budget.allocated")}
+                    </p>
+                    <p className="font-semibold">
+                      {formatCurrency(Number(budget.allocatedAmount))}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">
+                      {t("budget.spent")}
+                    </p>
+                    <p className="font-semibold">
+                      {formatCurrency(budget.spentAmount)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">
+                      {t("budget.remaining")}
+                    </p>
+                    <p
+                      className={`font-semibold ${
+                        budget.remainingAmount < 0 ? "text-red-600" : ""
+                      }`}
+                    >
+                      {formatCurrency(budget.remainingAmount)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">
+                      {t("budget.fiscalYear")}
+                    </p>
+                    <p className="font-semibold">{budget.fiscalYear}</p>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </>

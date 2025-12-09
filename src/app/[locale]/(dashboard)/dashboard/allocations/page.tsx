@@ -154,106 +154,207 @@ export default async function BudgetAllocationsPage({
         </div>
 
         {allocations.length > 0 ? (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">
-                    {t("budget.allocation.code")}
-                  </TableHead>
-                  <TableHead>{t("budget.allocation.projectName")}</TableHead>
-                  <TableHead>{t("budget.outputProject")}</TableHead>
-                  <TableHead>{t("budget.expenditureCategory")}</TableHead>
-                  <TableHead className="text-right">
-                    {t("budget.allocation.budgetAmount")}
-                  </TableHead>
-                  <TableHead className="text-right">
-                    {t("budget.allocation.disbursed")}
-                  </TableHead>
-                  <TableHead className="text-right">
-                    {t("budget.allocation.balance")}
-                  </TableHead>
-                  <TableHead className="text-center">
-                    {t("common.actions")}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {allocations.map((allocation) => (
-                  <TableRow key={allocation.id} className="hover:bg-muted/50">
-                    <TableCell className="font-medium text-sm">
-                      {allocation.code}
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{allocation.nameLocal}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {allocation.budget.division.nameLocal}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {allocation.budget.output.nameLocal}
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {allocation.budget.category.nameLocal}
-                    </TableCell>
-                    <TableCell className="text-right font-medium">
-                      {formatCurrency(Number(allocation.allocatedAmount))}
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[100px]">
+                      {t("budget.allocation.code")}
+                    </TableHead>
+                    <TableHead>{t("budget.allocation.projectName")}</TableHead>
+                    <TableHead>{t("budget.outputProject")}</TableHead>
+                    <TableHead>{t("budget.expenditureCategory")}</TableHead>
+                    <TableHead className="text-right">
+                      {t("budget.allocation.budgetAmount")}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {t("budget.allocation.disbursed")}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {t("budget.allocation.balance")}
+                    </TableHead>
+                    <TableHead className="text-center">
+                      {t("common.actions")}
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {allocations.map((allocation) => (
+                    <TableRow key={allocation.id} className="hover:bg-muted/50">
+                      <TableCell className="font-medium text-sm">
+                        {allocation.code}
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium">{allocation.nameLocal}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {allocation.budget.division.nameLocal}
+                          </p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {allocation.budget.output.nameLocal}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {allocation.budget.category.nameLocal}
+                      </TableCell>
+                      <TableCell className="text-right font-medium">
+                        {formatCurrency(Number(allocation.allocatedAmount))}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(allocation.spentAmount)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <span
+                          className={
+                            allocation.remainingAmount < 0
+                              ? "text-red-600 dark:text-red-400 font-semibold"
+                              : "font-medium"
+                          }
+                        >
+                          {formatCurrency(allocation.remainingAmount)}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Link
+                          href={`/${locale}/dashboard/allocations/${allocation.id}`}
+                        >
+                          <Button variant="ghost" size="sm">
+                            {t("budget.allocation.viewDetails")}
+                          </Button>
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+
+                  {/* Total Row */}
+                  <TableRow className="bg-muted/50 font-bold">
+                    <TableCell colSpan={4} className="text-right">
+                      {t("budget.allocation.total")}
                     </TableCell>
                     <TableCell className="text-right">
-                      {formatCurrency(allocation.spentAmount)}
+                      {formatCurrency(totalBudget)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(totalSpent)}
                     </TableCell>
                     <TableCell className="text-right">
                       <span
                         className={
-                          allocation.remainingAmount < 0
-                            ? "text-red-600 dark:text-red-400 font-semibold"
-                            : "font-medium"
+                          totalRemaining < 0
+                            ? "text-red-600 dark:text-red-400"
+                            : ""
                         }
                       >
-                        {formatCurrency(allocation.remainingAmount)}
+                        {formatCurrency(totalRemaining)}
                       </span>
                     </TableCell>
-                    <TableCell className="text-center">
-                      <Link
-                        href={`/${locale}/dashboard/allocations/${allocation.id}`}
-                      >
-                        <Button variant="ghost" size="sm">
-                          {t("budget.allocation.viewDetails")}
-                        </Button>
-                      </Link>
-                    </TableCell>
+                    <TableCell></TableCell>
                   </TableRow>
-                ))}
+                </TableBody>
+              </Table>
+            </div>
 
-                {/* Total Row */}
-                <TableRow className="bg-muted/50 font-bold">
-                  <TableCell colSpan={4} className="text-right">
-                    {t("budget.allocation.total")}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {formatCurrency(totalBudget)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {formatCurrency(totalSpent)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <span
-                      className={
-                        totalRemaining < 0
-                          ? "text-red-600 dark:text-red-400"
-                          : ""
-                      }
+            {/* Mobile Card View */}
+            <div className="md:hidden p-4 space-y-4">
+              {allocations.map((allocation) => (
+                <div
+                  key={allocation.id}
+                  className="rounded-lg border bg-card p-4"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <p className="font-medium">{allocation.nameLocal}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {allocation.code} • {allocation.budget.division.nameLocal}
+                      </p>
+                    </div>
+                    <Link
+                      href={`/${locale}/dashboard/allocations/${allocation.id}`}
+                    >
+                      <Button variant="outline" size="sm">
+                        {t("budget.allocation.viewDetails")}
+                      </Button>
+                    </Link>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <p className="text-muted-foreground">
+                        {t("budget.allocation.budgetAmount")}
+                      </p>
+                      <p className="font-semibold">
+                        {formatCurrency(Number(allocation.allocatedAmount))}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">
+                        {t("budget.allocation.disbursed")}
+                      </p>
+                      <p className="font-semibold">
+                        {formatCurrency(allocation.spentAmount)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">
+                        {t("budget.allocation.balance")}
+                      </p>
+                      <p
+                        className={`font-semibold ${
+                          allocation.remainingAmount < 0 ? "text-red-600" : ""
+                        }`}
+                      >
+                        {formatCurrency(allocation.remainingAmount)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">
+                        {t("budget.expenditureCategory")}
+                      </p>
+                      <p className="font-semibold truncate">
+                        {allocation.budget.category.nameLocal}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Mobile Total Summary */}
+              <div className="rounded-lg bg-muted/50 p-4">
+                <p className="font-semibold text-center mb-3">
+                  {t("budget.allocation.total")}
+                </p>
+                <div className="grid grid-cols-3 gap-2 text-sm text-center">
+                  <div>
+                    <p className="text-muted-foreground">
+                      {t("budget.allocation.budgetAmount")}
+                    </p>
+                    <p className="font-bold">{formatCurrency(totalBudget)}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">
+                      {t("budget.allocation.disbursed")}
+                    </p>
+                    <p className="font-bold">{formatCurrency(totalSpent)}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">
+                      {t("budget.allocation.balance")}
+                    </p>
+                    <p
+                      className={`font-bold ${
+                        totalRemaining < 0 ? "text-red-600" : ""
+                      }`}
                     >
                       {formatCurrency(totalRemaining)}
-                    </span>
-                  </TableCell>
-                  <TableCell></TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </div>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
         ) : (
           <div className="p-12 text-center">
             <p className="text-muted-foreground mb-4">

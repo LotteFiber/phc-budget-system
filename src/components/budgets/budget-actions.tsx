@@ -15,7 +15,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Pencil, Trash2, Eye } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreVertical, Pencil, Trash2, Eye } from "lucide-react";
 
 type BudgetActionsProps = {
   budgetId: string;
@@ -62,44 +69,49 @@ export default function BudgetActions({
 
   return (
     <>
-      <div className="flex items-center justify-end gap-2">
-        {/* View Button */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.push(`/${locale}/dashboard/budgets/${budgetId}`)}
-        >
-          <Eye className="h-4 w-4 mr-1" />
-          {t("common.view")}
-        </Button>
-
-        {/* Edit Button - only for ADMIN and SUPER_ADMIN */}
-        {canEdit && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() =>
-              router.push(`/${locale}/dashboard/budgets/${budgetId}/edit`)
-            }
-          >
-            <Pencil className="h-4 w-4 mr-1" />
-            {t("common.edit")}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <MoreVertical className="h-4 w-4" />
+            <span className="sr-only">{t("common.actions")}</span>
           </Button>
-        )}
-
-        {/* Delete Button - only for SUPER_ADMIN */}
-        {canDelete && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowDeleteDialog(true)}
-            className="text-destructive hover:text-destructive"
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {/* View */}
+          <DropdownMenuItem
+            onClick={() => router.push(`/${locale}/dashboard/budgets/${budgetId}`)}
           >
-            <Trash2 className="h-4 w-4 mr-1" />
-            {t("common.delete")}
-          </Button>
-        )}
-      </div>
+            <Eye className="h-4 w-4 mr-2" />
+            {t("common.view")}
+          </DropdownMenuItem>
+
+          {/* Edit - only for ADMIN and SUPER_ADMIN */}
+          {canEdit && (
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(`/${locale}/dashboard/budgets/${budgetId}/edit`)
+              }
+            >
+              <Pencil className="h-4 w-4 mr-2" />
+              {t("common.edit")}
+            </DropdownMenuItem>
+          )}
+
+          {/* Delete - only for SUPER_ADMIN */}
+          {canDelete && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => setShowDeleteDialog(true)}
+                className="text-destructive focus:text-destructive"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                {t("common.delete")}
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
