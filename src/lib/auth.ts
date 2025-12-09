@@ -1,4 +1,6 @@
 import NextAuth from "next-auth";
+import type { Session, User } from "next-auth";
+import type { JWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
@@ -64,23 +66,23 @@ export const authOptions = {
     signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, user }: any) {
+    async jwt({ token, user }: { token: JWT; user: User | null }) {
       if (user) {
-        token.id = user.id as string;
-        token.role = (user as any).role;
-        token.divisionId = (user as any).divisionId;
-        token.divisionName = (user as any).divisionName;
-        token.nameLocal = (user as any).nameLocal;
+        token.id = user.id;
+        token.role = user.role;
+        token.divisionId = user.divisionId;
+        token.divisionName = user.divisionName;
+        token.nameLocal = user.nameLocal;
       }
       return token;
     },
-    async session({ session, token }: any) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       if (token && session.user) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
-        session.user.divisionId = token.divisionId as string;
-        session.user.divisionName = token.divisionName as string;
-        session.user.nameLocal = token.nameLocal as string;
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.user.divisionId = token.divisionId;
+        session.user.divisionName = token.divisionName;
+        session.user.nameLocal = token.nameLocal;
       }
       return session;
     },

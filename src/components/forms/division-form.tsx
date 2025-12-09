@@ -45,7 +45,8 @@ export default function DivisionForm({ division, locale }: DivisionFormProps) {
   const [error, setError] = useState("");
 
   // Check if the existing division name is in predefined list or custom
-  const isCustomName = division?.nameLocal && !PREDEFINED_DIVISIONS.includes(division.nameLocal);
+  const isCustomName =
+    division?.nameLocal && !PREDEFINED_DIVISIONS.includes(division.nameLocal);
 
   const [formData, setFormData] = useState({
     nameLocal: division?.nameLocal || "",
@@ -98,12 +99,16 @@ export default function DivisionForm({ division, locale }: DivisionFormProps) {
       } else {
         // Enhanced error messages
         const errorMessage = result.error || "An error occurred";
-        console.error("Division form error:", errorMessage);
+        // console.error("Division form error:", errorMessage);
         setError(errorMessage);
       }
     } catch (err) {
-      console.error("Division form exception:", err);
-      setError(`An unexpected error occurred: ${err instanceof Error ? err.message : "Unknown error"}`);
+      // console.error("Division form exception:", err);
+      setError(
+        `An unexpected error occurred: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`
+      );
     } finally {
       setIsLoading(false);
     }
@@ -156,7 +161,8 @@ export default function DivisionForm({ division, locale }: DivisionFormProps) {
                     </SelectContent>
                   </Select>
                   <p className="text-sm text-muted-foreground">
-                    เลือกจากรายการที่กำหนดไว้ หรือเลือก "กรอกชื่อเอง" เพื่อกรอกชื่อกลุ่มงานใหม่
+                    เลือกจากรายการที่กำหนดไว้ หรือเลือก &quot;กรอกชื่อเอง&quot;
+                    เพื่อกรอกชื่อกลุ่มงานใหม่
                   </p>
                 </>
               ) : (

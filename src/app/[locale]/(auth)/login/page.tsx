@@ -8,7 +8,13 @@ import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -37,7 +43,7 @@ export default function LoginPage() {
       console.log("Login result:", result);
 
       if (result?.error) {
-        console.error("Login error:", result.error);
+        // console.error("Login error:", result.error);
         setError(t("auth.loginError") + " - " + result.error);
       } else if (result?.ok) {
         console.log("Login successful, redirecting...");
@@ -46,14 +52,18 @@ export default function LoginPage() {
       }
     } catch (error) {
       console.error("Login exception:", error);
-      setError(t("error.general") + " - " + (error instanceof Error ? error.message : "Unknown error"));
+      setError(
+        t("error.general") +
+          " - " +
+          (error instanceof Error ? error.message : "Unknown error")
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-primary/5 via-background to-accent/5 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-2 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
@@ -71,7 +81,9 @@ export default function LoginPage() {
               />
             </svg>
           </div>
-          <CardTitle className="text-2xl font-bold">{t("common.appName")}</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            {t("common.appName")}
+          </CardTitle>
           <CardDescription className="text-sm">
             {t("common.ministry")}
             <br />

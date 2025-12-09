@@ -30,10 +30,7 @@ export default async function EditDivisionPage({ params }: Props) {
         </p>
       </div>
 
-      <DivisionForm
-        division={division}
-        locale={locale}
-      />
+      <DivisionForm division={division} locale={locale} />
     </div>
   );
 }

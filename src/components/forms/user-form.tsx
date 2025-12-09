@@ -132,7 +132,7 @@ export default function UserForm({ user, locale }: UserFormProps) {
         setError(result.error || "An error occurred");
       }
     } catch (err) {
-      console.error("User form error:", err);
+      // console.error("User form error:", err);
       setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);
