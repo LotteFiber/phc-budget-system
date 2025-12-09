@@ -190,7 +190,7 @@ export default function DeleteDivisionButton({
                           This division has {expenseCount} expense{expenseCount === 1 ? "" : "s"} recorded.
                           You need to delete all expenses first.
                         </p>
-                        <Link href={`/${locale}/dashboard/allocations?division=${id}`}>
+                        <Link href={`/${locale}/dashboard/projects?division=${id}`}>
                           <Button size="sm" variant="outline" className="gap-2">
                             <Receipt className="h-4 w-4" />
                             View Expenses

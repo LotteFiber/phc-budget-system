@@ -31,7 +31,7 @@ type Allocation = {
   nameLocal: string;
 };
 
-type AllocationFiltersProps = {
+type ProjectFiltersProps = {
   divisions: Division[];
   outputs: Output[];
   categories: Category[];
@@ -39,13 +39,13 @@ type AllocationFiltersProps = {
   locale: string;
 };
 
-export default function AllocationFilters({
+export default function ProjectFilters({
   divisions,
   outputs,
   categories,
   allocations,
   locale,
-}: AllocationFiltersProps) {
+}: ProjectFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations();
@@ -64,7 +64,7 @@ export default function AllocationFilters({
       params.set(key, value);
     }
 
-    router.push(`/${locale}/dashboard/allocations?${params.toString()}`);
+    router.push(`/${locale}/dashboard/projects?${params.toString()}`);
   };
 
   return (

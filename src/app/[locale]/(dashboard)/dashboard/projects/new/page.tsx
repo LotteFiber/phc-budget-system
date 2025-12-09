@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import BudgetAllocationForm from "@/components/forms/budget-allocation-form";
+import ProjectForm from "@/components/forms/project-form";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -45,7 +45,7 @@ export default async function NewBudgetAllocationPage({ params }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <Link href={`/${locale}/dashboard/allocations`}>
+        <Link href={`/${locale}/dashboard/projects`}>
           <Button variant="ghost" size="sm" className="gap-2 mb-4">
             <ArrowLeft className="h-4 w-4" />
             {t("common.back")}
@@ -61,7 +61,7 @@ export default async function NewBudgetAllocationPage({ params }: Props) {
 
       {availableBudgets.length > 0 ? (
         <div className="rounded-lg border bg-card p-6">
-          <BudgetAllocationForm budgets={availableBudgets} locale={locale} />
+          <ProjectForm budgets={availableBudgets} locale={locale} />
         </div>
       ) : (
         <div className="rounded-lg border bg-card p-12 text-center">

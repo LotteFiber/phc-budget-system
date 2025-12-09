@@ -279,7 +279,7 @@ export default async function BudgetDetailPage({ params }: Props) {
                           {new Date(allocation.startDate).toLocaleDateString("th-TH", { day: "2-digit", month: "2-digit" })} - {new Date(allocation.endDate).toLocaleDateString("th-TH", { day: "2-digit", month: "2-digit" })}
                         </TableCell>
                         <TableCell className="text-right">
-                          <Link href={`/${locale}/dashboard/allocations/${allocation.id}`}>
+                          <Link href={`/${locale}/dashboard/projects/${allocation.id}`}>
                             <Button variant="ghost" size="sm">
                               {t("common.view")}
                             </Button>
@@ -296,7 +296,7 @@ export default async function BudgetDetailPage({ params }: Props) {
                 {budget.budgetAllocations.map((allocation) => (
                   <Link
                     key={allocation.id}
-                    href={`/${locale}/dashboard/allocations/${allocation.id}`}
+                    href={`/${locale}/dashboard/projects/${allocation.id}`}
                     className="block border rounded-lg p-3 hover:bg-accent/50 transition-colors"
                   >
                     <div className="flex justify-between items-start mb-2">

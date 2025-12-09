@@ -33,7 +33,7 @@ type Budget = {
   };
 };
 
-type BudgetAllocationFormProps = {
+type ProjectFormProps = {
   budgets: Budget[];
   initialData?: {
     id: string;
@@ -47,11 +47,11 @@ type BudgetAllocationFormProps = {
   locale: string;
 };
 
-export default function BudgetAllocationForm({
+export default function ProjectForm({
   budgets,
   initialData,
   locale,
-}: BudgetAllocationFormProps) {
+}: ProjectFormProps) {
   const t = useTranslations();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -96,7 +96,7 @@ export default function BudgetAllocationForm({
         : await createBudgetAllocation(data);
 
       if (result.success) {
-        router.push(`/${locale}/dashboard/allocations`);
+        router.push(`/${locale}/dashboard/projects`);
         router.refresh();
       } else {
         setError(result.error || "An error occurred");

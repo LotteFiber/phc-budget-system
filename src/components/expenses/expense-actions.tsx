@@ -82,7 +82,7 @@ export default function ExpenseActions({
           <DropdownMenuItem
             onClick={() =>
               router.push(
-                `/${locale}/dashboard/allocations/${allocationId}/expense/${expense.id}`
+                `/${locale}/dashboard/projects/${allocationId}/expense/${expense.id}`
               )
             }
           >

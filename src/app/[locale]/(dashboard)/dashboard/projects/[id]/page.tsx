@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ArrowLeft, Edit, Plus } from "lucide-react";
-import DeleteAllocationButton from "@/components/allocations/delete-allocation-button";
+import DeleteProjectButton from "@/components/projects/delete-project-button";
 import ExpenseActions from "@/components/expenses/expense-actions";
 
 type Props = {
@@ -122,7 +122,7 @@ export default async function BudgetAllocationDetailPage({ params }: Props) {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <Link href={`/${locale}/dashboard/allocations`}>
+          <Link href={`/${locale}/dashboard/projects`}>
             <Button variant="ghost" size="sm" className="gap-2 mb-4">
               <ArrowLeft className="h-4 w-4" />
               {t("common.back")}
@@ -137,7 +137,7 @@ export default async function BudgetAllocationDetailPage({ params }: Props) {
         </div>
         <div className="flex gap-2 flex-wrap">
           {canEdit && allocation.status === "ACTIVE" && (
-            <Link href={`/${locale}/dashboard/allocations/${id}/edit`}>
+            <Link href={`/${locale}/dashboard/projects/${id}/edit`}>
               <Button size="sm" className="gap-2">
                 <Edit className="h-4 w-4" />
                 {t("common.edit")}
@@ -145,7 +145,7 @@ export default async function BudgetAllocationDetailPage({ params }: Props) {
             </Link>
           )}
           {canDelete && (
-            <DeleteAllocationButton
+            <DeleteProjectButton
               id={id}
               locale={locale}
               hasExpenses={hasExpenses}
@@ -314,7 +314,7 @@ export default async function BudgetAllocationDetailPage({ params }: Props) {
           <div className="flex items-center justify-between">
             <CardTitle>{t("expense.title")}</CardTitle>
             {allocation.status === "ACTIVE" && (
-              <Link href={`/${locale}/dashboard/allocations/${id}/expense/new`}>
+              <Link href={`/${locale}/dashboard/projects/${id}/expense/new`}>
                 <Button size="sm" className="gap-2">
                   <Plus className="h-4 w-4" />
                   {t("budget.allocation.createExpense")}
@@ -394,7 +394,7 @@ export default async function BudgetAllocationDetailPage({ params }: Props) {
                 {allocation.expenses.map((expense) => (
                   <Link
                     key={expense.id}
-                    href={`/${locale}/dashboard/allocations/${id}/expense/${expense.id}`}
+                    href={`/${locale}/dashboard/projects/${id}/expense/${expense.id}`}
                     className="block"
                   >
                     <div className="rounded-lg border bg-card p-4 hover:bg-accent/50 transition-colors">

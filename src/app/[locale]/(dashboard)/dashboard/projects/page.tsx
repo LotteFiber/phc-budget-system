@@ -15,8 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import AllocationFilters from "@/components/allocations/allocation-filters";
-import DisbursementModal from "@/components/allocations/disbursement-modal";
+import ProjectFilters from "@/components/projects/project-filters";
+import DisbursementModal from "@/components/projects/disbursement-modal";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -126,7 +126,7 @@ export default async function BudgetAllocationsPage({
 
       {/* Filters Section */}
       <div className="rounded-lg border bg-card p-6">
-        <AllocationFilters
+        <ProjectFilters
           divisions={divisions}
           outputs={outputs}
           categories={categories}
@@ -136,7 +136,7 @@ export default async function BudgetAllocationsPage({
 
         {/* Action Buttons */}
         <div className="flex gap-3 justify-end">
-          <Link href={`/${locale}/dashboard/allocations/new`}>
+          <Link href={`/${locale}/dashboard/projects/new`}>
             <Button size="lg" className="min-w-[180px]">
               {t("budget.allocation.addProject")}
             </Button>
@@ -219,7 +219,7 @@ export default async function BudgetAllocationsPage({
                       </TableCell>
                       <TableCell className="text-center">
                         <Link
-                          href={`/${locale}/dashboard/allocations/${allocation.id}`}
+                          href={`/${locale}/dashboard/projects/${allocation.id}`}
                         >
                           <Button variant="ghost" size="sm">
                             {t("budget.allocation.viewDetails")}
@@ -272,7 +272,7 @@ export default async function BudgetAllocationsPage({
                       </p>
                     </div>
                     <Link
-                      href={`/${locale}/dashboard/allocations/${allocation.id}`}
+                      href={`/${locale}/dashboard/projects/${allocation.id}`}
                     >
                       <Button variant="outline" size="sm">
                         {t("budget.allocation.viewDetails")}
@@ -360,7 +360,7 @@ export default async function BudgetAllocationsPage({
             <p className="text-muted-foreground mb-4">
               {t("budget.allocation.noProjects")}
             </p>
-            <Link href={`/${locale}/dashboard/allocations/new`}>
+            <Link href={`/${locale}/dashboard/projects/new`}>
               <Button>{t("budget.allocation.addNewProject")}</Button>
             </Link>
           </div>

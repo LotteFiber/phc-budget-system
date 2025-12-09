@@ -232,7 +232,7 @@ export async function createBudgetAllocation(data: BudgetAllocationInput) {
       },
     });
 
-    revalidatePath("/[locale]/dashboard/allocations");
+    revalidatePath("/[locale]/dashboard/projects");
     revalidatePath(`/[locale]/dashboard/budgets/${validatedData.budgetId}`);
 
     return {
@@ -335,8 +335,8 @@ export async function updateBudgetAllocation(
       },
     });
 
-    revalidatePath("/[locale]/dashboard/allocations");
-    revalidatePath(`/[locale]/dashboard/allocations/${id}`);
+    revalidatePath("/[locale]/dashboard/projects");
+    revalidatePath(`/[locale]/dashboard/projects/${id}`);
     revalidatePath(`/[locale]/dashboard/budgets/${existing.budgetId}`);
 
     return {
@@ -391,7 +391,7 @@ export async function deleteBudgetAllocation(id: string) {
       where: { id },
     });
 
-    revalidatePath("/[locale]/dashboard/allocations");
+    revalidatePath("/[locale]/dashboard/projects");
     revalidatePath(`/[locale]/dashboard/budgets/${existing.budgetId}`);
 
     return { success: true };

@@ -35,7 +35,7 @@ export default function Sidebar() {
       icon: Wallet,
     },
     {
-      href: `/${locale}/dashboard/allocations`,
+      href: `/${locale}/dashboard/projects`,
       label: t("nav.expenses"),
       icon: Receipt,
     },

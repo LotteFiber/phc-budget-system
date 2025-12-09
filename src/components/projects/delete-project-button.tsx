@@ -20,17 +20,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { deleteBudgetAllocation } from "@/actions/budget-allocation";
 
-interface DeleteAllocationButtonProps {
+interface DeleteProjectButtonProps {
   id: string;
   locale: string;
   hasExpenses: boolean;
 }
 
-export default function DeleteAllocationButton({
+export default function DeleteProjectButton({
   id,
   locale,
   hasExpenses,
-}: DeleteAllocationButtonProps) {
+}: DeleteProjectButtonProps) {
   const t = useTranslations();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -42,7 +42,7 @@ export default function DeleteAllocationButton({
         const result = await deleteBudgetAllocation(id);
         if (result.success) {
           toast.success("Project deleted successfully");
-          router.push(`/${locale}/dashboard/allocations`);
+          router.push(`/${locale}/dashboard/projects`);
           router.refresh();
         } else {
           toast.error(result.error || "Failed to delete project");

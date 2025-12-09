@@ -6,7 +6,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import BudgetAllocationForm from "@/components/forms/budget-allocation-form";
+import ProjectForm from "@/components/forms/project-form";
 
 type Props = {
   params: Promise<{ locale: string; id: string }>;
@@ -36,7 +36,7 @@ export default async function EditBudgetAllocationPage({ params }: Props) {
     allocation.createdById === session.user.id;
 
   if (!canEdit) {
-    redirect(`/${locale}/dashboard/allocations/${id}`);
+    redirect(`/${locale}/dashboard/projects/${id}`);
   }
 
   // Fetch all budgets for the dropdown
@@ -65,7 +65,7 @@ export default async function EditBudgetAllocationPage({ params }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <Link href={`/${locale}/dashboard/allocations/${id}`}>
+        <Link href={`/${locale}/dashboard/projects/${id}`}>
           <Button variant="ghost" size="sm" className="gap-2 mb-4">
             <ArrowLeft className="h-4 w-4" />
             {t("common.back")}
@@ -80,7 +80,7 @@ export default async function EditBudgetAllocationPage({ params }: Props) {
       </div>
 
       <div className="rounded-lg border bg-card p-6">
-        <BudgetAllocationForm
+        <ProjectForm
           budgets={availableBudgets}
           initialData={initialData}
           locale={locale}
