@@ -10,7 +10,6 @@ import {
   Wallet,
   FolderKanban,
   Receipt,
-  CheckSquare,
   Building2,
   Users,
   X,
@@ -44,11 +43,6 @@ export default function Sidebar() {
       href: `/${locale}/dashboard/projects`,
       label: t("nav.expenses"),
       icon: Receipt,
-    },
-    {
-      href: `/${locale}/dashboard/approvals`,
-      label: t("nav.approvals"),
-      icon: CheckSquare,
     },
     {
       href: `/${locale}/dashboard/divisions`,
