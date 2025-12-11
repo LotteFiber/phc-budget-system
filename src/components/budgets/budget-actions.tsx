@@ -29,6 +29,7 @@ type BudgetActionsProps = {
   budgetCode: string;
   locale: string;
   userRole: string;
+  basePath?: string;
 };
 
 export default function BudgetActions({
@@ -36,6 +37,7 @@ export default function BudgetActions({
   budgetCode,
   locale,
   userRole,
+  basePath = "budgets",
 }: BudgetActionsProps) {
   const t = useTranslations();
   const router = useRouter();
@@ -79,7 +81,7 @@ export default function BudgetActions({
         <DropdownMenuContent align="end">
           {/* View */}
           <DropdownMenuItem
-            onClick={() => router.push(`/${locale}/dashboard/budgets/${budgetId}`)}
+            onClick={() => router.push(`/${locale}/dashboard/${basePath}/${budgetId}`)}
           >
             <Eye className="h-4 w-4 mr-2" />
             {t("common.view")}
@@ -89,7 +91,7 @@ export default function BudgetActions({
           {canEdit && (
             <DropdownMenuItem
               onClick={() =>
-                router.push(`/${locale}/dashboard/budgets/${budgetId}/edit`)
+                router.push(`/${locale}/dashboard/${basePath}/${budgetId}/edit`)
               }
             >
               <Pencil className="h-4 w-4 mr-2" />

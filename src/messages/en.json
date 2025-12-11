@@ -47,6 +47,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "budgets": "Budgets",
+    "budgetAllocations": "Budget Allocation",
     "expenses": "Projects",
     "approvals": "Approvals",
     "reports": "Reports",
@@ -176,6 +177,16 @@
       "rejected": "Rejected"
     }
   },
+  "budgetAllocation": {
+    "pageTitle": "Budget Allocation",
+    "createNew": "Create New Budget Allocation",
+    "createFirst": "Create Your First Budget Allocation",
+    "createDescription": "Fill out the form below to allocate budget to a division",
+    "manageDescription": "Manage and track budget allocations to divisions",
+    "edit": "Edit Budget Allocation",
+    "details": "Budget Allocation Details",
+    "adminOnly": "Only administrators can allocate budgets"
+  },
   "expense": {
     "title": "Expenses",
     "create": "Create Expense",
@@ -191,6 +202,7 @@
     "budget": "Budget",
     "category": "Category",
     "division": "Division",
+    "department": "Department",
     "amount": "Amount",
     "expenseDate": "Expense Date",
     "date": "Expense Date",
@@ -203,6 +215,7 @@
     "noExpenses": "No expenses found",
     "noDocuments": "No documents uploaded",
     "selectDivision": "Select Division",
+    "selectDepartment": "Select Department",
     "selectCategory": "Select Category",
     "selectBudget": "Select Budget",
     "remainingBudget": "Remaining Budget",

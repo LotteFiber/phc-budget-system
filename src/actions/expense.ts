@@ -143,6 +143,9 @@ export async function createExpense(data: ExpenseInput) {
     });
 
     revalidatePath("/[locale]/dashboard/expenses");
+    if (validated.budgetAllocationId) {
+      revalidatePath(`/[locale]/dashboard/projects/${validated.budgetAllocationId}`);
+    }
     return { success: true, data: expense };
   } catch (error) {
     if (error instanceof z.ZodError) {

@@ -188,7 +188,7 @@ export default async function BudgetAllocationsPage({
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className="font-medium">{allocation.nameLocal}</p>
+                          <p className="font-medium">{allocation.name}</p>
                           <p className="text-xs text-muted-foreground">
                             {allocation.budget.division.nameLocal}
                           </p>
@@ -266,7 +266,7 @@ export default async function BudgetAllocationsPage({
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <p className="font-medium">{allocation.nameLocal}</p>
+                      <p className="font-medium">{allocation.name}</p>
                       <p className="text-xs text-muted-foreground">
                         {allocation.code} • {allocation.budget.division.nameLocal}
                       </p>

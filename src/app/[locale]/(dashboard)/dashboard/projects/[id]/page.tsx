@@ -129,9 +129,9 @@ export default async function BudgetAllocationDetailPage({ params }: Props) {
             </Button>
           </Link>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-            {allocation.nameLocal}
+            {allocation.name}
           </h1>
-          {allocation.name !== allocation.nameLocal && (
+          {allocation.name !== allocation.name && (
             <p className="text-muted-foreground">{allocation.name}</p>
           )}
         </div>
@@ -221,16 +221,16 @@ export default async function BudgetAllocationDetailPage({ params }: Props) {
               </div>
             </div>
 
-            {(allocation.description || allocation.descriptionLocal) && (
+            {(allocation.description || allocation.description) && (
               <div>
                 <p className="text-sm text-muted-foreground mb-1">
                   {t("common.description")}
                 </p>
-                {allocation.descriptionLocal && (
-                  <p className="text-sm">{allocation.descriptionLocal}</p>
+                {allocation.description && (
+                  <p className="text-sm">{allocation.description}</p>
                 )}
                 {allocation.description &&
-                  allocation.description !== allocation.descriptionLocal && (
+                  allocation.description !== allocation.description && (
                     <p className="text-sm text-muted-foreground mt-1">
                       {allocation.description}
                     </p>

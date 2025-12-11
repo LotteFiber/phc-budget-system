@@ -146,7 +146,7 @@ export default function ProjectFilters({
             <SelectItem value="all">{t("budget.allocation.all")}</SelectItem>
             {allocations.map((allocation) => (
               <SelectItem key={allocation.id} value={allocation.id}>
-                {allocation.nameLocal}
+                {allocation.name}
               </SelectItem>
             ))}
           </SelectContent>

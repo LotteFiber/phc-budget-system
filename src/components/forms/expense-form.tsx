@@ -15,18 +15,6 @@ import {
 } from "@/components/ui/select";
 import { createExpense, updateExpense } from "@/actions/expense";
 
-type Department = {
-  id: string;
-  code: string;
-  name: string;
-  nameLocal: string | null;
-  description?: string | null;
-  descriptionLocal?: string | null;
-  isActive?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
 type BudgetCategory = {
   id: string;
   code: string;
@@ -41,13 +29,24 @@ type Budget = {
   nameLocal: string;
   remainingAmount: number;
   categoryId: string;
+  divisionId?: string;
+};
+
+type BudgetAllocation = {
+  id: string;
+  code: string;
+  name: string;
+  budget: {
+    divisionId: string;
+  };
 };
 
 type ExpenseFormProps = {
-  departments: Department[];
   categories: BudgetCategory[];
   budgets: Budget[];
   locale: string;
+  budgetAllocationId?: string;
+  budgetAllocation?: BudgetAllocation;
   initialData?: {
     id: string;
     code: string;
@@ -64,10 +63,11 @@ type ExpenseFormProps = {
 };
 
 export default function ExpenseForm({
-  departments,
   categories,
   budgets: initialBudgets,
   locale,
+  budgetAllocationId,
+  budgetAllocation,
   initialData,
 }: ExpenseFormProps) {
   const t = useTranslations();
@@ -76,16 +76,27 @@ export default function ExpenseForm({
   const [error, setError] = useState("");
   const [budgets, setBudgets] = useState(initialBudgets);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    code: string;
+    budgetId: string;
+    categoryId: string;
+    divisionId: string;
+    title: string;
+    titleLocal: string;
+    description: string;
+    descriptionLocal: string;
+    amount: number | "";
+    expenseDate: string;
+  }>({
     code: initialData?.code || "",
-    budgetId: initialData?.budgetId || "",
+    budgetId: initialData?.budgetId || (initialBudgets[0]?.id || ""),
     categoryId: initialData?.categoryId || "",
-    divisionId: initialData?.divisionId || "",
+    divisionId: initialData?.divisionId || budgetAllocation?.budget?.divisionId || initialBudgets[0]?.divisionId || "",
     title: initialData?.title || "",
     titleLocal: initialData?.titleLocal || "",
     description: initialData?.description || "",
     descriptionLocal: initialData?.descriptionLocal || "",
-    amount: initialData?.amount || 0,
+    amount: initialData?.amount || "",
     expenseDate: initialData?.expenseDate || new Date().toISOString().split("T")[0],
   });
 
@@ -120,8 +131,11 @@ export default function ExpenseForm({
     try {
       const data = {
         ...formData,
-        amount: Number(formData.amount),
+        title: formData.title || formData.titleLocal,
+        description: formData.description || formData.descriptionLocal,
+        amount: Number(formData.amount) || 0,
         expenseDate: new Date(formData.expenseDate),
+        ...(budgetAllocationId && { budgetAllocationId }),
       };
 
       const result = initialData
@@ -129,7 +143,11 @@ export default function ExpenseForm({
         : await createExpense(data);
 
       if (result.success) {
-        router.push(`/${locale}/dashboard/expenses`);
+        // Redirect to project page if creating from project context, otherwise to expenses list
+        const redirectUrl = budgetAllocationId
+          ? `/${locale}/dashboard/projects/${budgetAllocationId}`
+          : `/${locale}/dashboard/expenses`;
+        router.push(redirectUrl);
         router.refresh();
       } else {
         setError(result.error || "An error occurred");
@@ -174,25 +192,7 @@ export default function ExpenseForm({
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="divisionId">{t("expense.department")} *</Label>
-          <Select
-            value={formData.divisionId}
-            onValueChange={(value) => setFormData({ ...formData, divisionId: value })}
-            disabled={isLoading}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={t("expense.selectDepartment")} />
-            </SelectTrigger>
-            <SelectContent>
-              {departments.map((dept) => (
-                <SelectItem key={dept.id} value={dept.id}>
-                  {dept.code} - {dept.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Department selector removed - divisionId is set from budget allocation context */}
 
         <div className="space-y-2">
           <Label htmlFor="budgetId">{t("expense.budget")} *</Label>
@@ -247,7 +247,7 @@ export default function ExpenseForm({
             type="number"
             step="0.01"
             value={formData.amount}
-            onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
+            onChange={(e) => setFormData({ ...formData, amount: e.target.value === "" ? "" : parseFloat(e.target.value) })}
             required
             disabled={isLoading}
             min="0"
@@ -255,23 +255,12 @@ export default function ExpenseForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="title">{t("expense.title")} (EN) *</Label>
-          <Input
-            id="title"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            required
-            disabled={isLoading}
-            placeholder="Office Supplies Purchase"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="titleLocal">{t("expense.title")} (TH)</Label>
+          <Label htmlFor="titleLocal">{t("expense.title")} *</Label>
           <Input
             id="titleLocal"
             value={formData.titleLocal}
             onChange={(e) => setFormData({ ...formData, titleLocal: e.target.value })}
+            required
             disabled={isLoading}
             placeholder="ซื้ออุปกรณ์สำนักงาน"
           />
@@ -279,20 +268,7 @@ export default function ExpenseForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">{t("expense.description")} (EN) *</Label>
-        <textarea
-          id="description"
-          className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          required
-          disabled={isLoading}
-          placeholder="Detailed description of the expense..."
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="descriptionLocal">{t("expense.description")} (TH)</Label>
+        <Label htmlFor="descriptionLocal">{t("expense.description")}</Label>
         <textarea
           id="descriptionLocal"
           className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"

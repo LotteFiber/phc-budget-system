@@ -73,9 +73,10 @@ model Division {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  users    User[]
-  budgets  Budget[]
-  expenses Expense[]
+  users             User[]
+  budgets           Budget[]
+  budgetAllocations BudgetAllocation[]
+  expenses          Expense[]
 }
 
 // Budget Category Model
@@ -205,6 +206,8 @@ model BudgetAllocation {
   descriptionLocal String? // Thai description
   budgetId         String
   budget           Budget   @relation(fields: [budgetId], references: [id])
+  divisionId       String
+  division         Division @relation(fields: [divisionId], references: [id])
   allocatedAmount  Decimal  @db.Decimal(15, 2)
   startDate        DateTime
   endDate          DateTime
@@ -218,6 +221,7 @@ model BudgetAllocation {
 
   @@index([code])
   @@index([budgetId])
+  @@index([divisionId])
   @@index([createdById])
   @@index([status])
 }

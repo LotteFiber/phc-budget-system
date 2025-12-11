@@ -122,6 +122,10 @@ export async function getBudgets(filters?: {
         allocatedAmount: Number(budget.allocatedAmount),
         spentAmount: allocatedToProjects,
         remainingAmount: Number(budget.allocatedAmount) - allocatedToProjects,
+        budgetAllocations: budget.budgetAllocations.map((alloc) => ({
+          ...alloc,
+          allocatedAmount: Number(alloc.allocatedAmount),
+        })),
       };
     });
 

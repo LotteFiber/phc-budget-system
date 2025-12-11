@@ -53,9 +53,9 @@ export default async function EditBudgetAllocationPage({ params }: Props) {
   const initialData = {
     id: allocation.id,
     name: allocation.name,
-    nameLocal: allocation.nameLocal,
+    nameLocal: allocation.name,
     description: allocation.description || undefined,
-    descriptionLocal: allocation.descriptionLocal || undefined,
+    description: allocation.description || undefined,
     budgetId: allocation.budgetId,
     allocatedAmount: Number(allocation.allocatedAmount),
     startDate: new Date(allocation.startDate).toISOString().split("T")[0],

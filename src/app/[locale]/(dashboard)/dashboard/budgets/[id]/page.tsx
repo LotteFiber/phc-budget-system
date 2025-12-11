@@ -268,7 +268,7 @@ export default async function BudgetDetailPage({ params }: Props) {
                         <TableCell className="font-medium">
                           {allocation.code}
                         </TableCell>
-                        <TableCell>{allocation.nameLocal}</TableCell>
+                        <TableCell>{allocation.name}</TableCell>
                         <TableCell className="text-right font-semibold">
                           {formatCurrency(Number(allocation.allocatedAmount))}
                         </TableCell>
@@ -301,7 +301,7 @@ export default async function BudgetDetailPage({ params }: Props) {
                   >
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
-                        <p className="font-medium text-sm">{allocation.nameLocal}</p>
+                        <p className="font-medium text-sm">{allocation.name}</p>
                         <p className="text-xs text-muted-foreground">
                           {allocation.code}
                         </p>

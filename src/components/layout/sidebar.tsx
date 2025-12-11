@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   Wallet,
+  FolderKanban,
   Receipt,
   CheckSquare,
   Building2,
@@ -33,6 +34,11 @@ export default function Sidebar() {
       href: `/${locale}/dashboard/budgets`,
       label: t("nav.budgets"),
       icon: Wallet,
+    },
+    {
+      href: `/${locale}/dashboard/budget-allocations`,
+      label: t("nav.budgetAllocations"),
+      icon: FolderKanban,
     },
     {
       href: `/${locale}/dashboard/projects`,

@@ -10,6 +10,7 @@ const budgetAllocationSchema = z.object({
   nameLocal: z.string().min(1, "Thai name is required"),
   descriptionLocal: z.string().optional(),
   budgetId: z.string().min(1, "Budget is required"),
+  divisionId: z.string().min(1, "Division is required"),
   allocatedAmount: z.number().positive("Amount must be positive"),
   startDate: z.date(),
   endDate: z.date(),
@@ -48,6 +49,7 @@ export async function getBudgetAllocations(filters?: {
             category: true,
           },
         },
+        division: true,
         createdBy: {
           select: {
             id: true,
@@ -111,6 +113,7 @@ export async function getBudgetAllocationById(id: string) {
             activity: true,
           },
         },
+        division: true,
         createdBy: {
           select: {
             id: true,
@@ -213,11 +216,12 @@ export async function createBudgetAllocation(data: BudgetAllocationInput) {
     const allocation = await prisma.budgetAllocation.create({
       data: {
         code,
-        name: validatedData.nameLocal, // Use Thai name as the main name
+        name: validatedData.nameLocal,
         nameLocal: validatedData.nameLocal,
         description: validatedData.descriptionLocal,
         descriptionLocal: validatedData.descriptionLocal,
         budgetId: validatedData.budgetId,
+        divisionId: validatedData.divisionId,
         allocatedAmount: validatedData.allocatedAmount,
         startDate: validatedData.startDate,
         endDate: validatedData.endDate,
@@ -229,9 +233,11 @@ export async function createBudgetAllocation(data: BudgetAllocationInput) {
             division: true,
           },
         },
+        division: true,
       },
     });
 
+    revalidatePath("/[locale]/dashboard/budget-allocations");
     revalidatePath("/[locale]/dashboard/projects");
     revalidatePath(`/[locale]/dashboard/budgets/${validatedData.budgetId}`);
 
@@ -318,7 +324,7 @@ export async function updateBudgetAllocation(
     const allocation = await prisma.budgetAllocation.update({
       where: { id },
       data: {
-        name: data.nameLocal || existing.nameLocal, // Use Thai name as the main name
+        name: data.nameLocal || existing.nameLocal,
         nameLocal: data.nameLocal,
         description: data.descriptionLocal || null,
         descriptionLocal: data.descriptionLocal || null,
