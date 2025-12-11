@@ -5,6 +5,7 @@ import {
   getBudgetCategories,
   getOutputs,
 } from "@/actions/helpers";
+import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +18,7 @@ import {
 } from "@/components/ui/table";
 import ProjectFilters from "@/components/projects/project-filters";
 import DisbursementModal from "@/components/projects/disbursement-modal";
+import BudgetAllocationActions from "@/components/budget-allocations/budget-allocation-actions";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -29,6 +31,7 @@ export default async function BudgetAllocationsPage({
 }: Props) {
   const { locale } = await params;
   const t = await getTranslations({ locale });
+  const session = await auth();
 
   const searchParamsResolved = await searchParams;
   const divisionId = searchParamsResolved.divisionId as string | undefined;
@@ -218,13 +221,13 @@ export default async function BudgetAllocationsPage({
                         </span>
                       </TableCell>
                       <TableCell className="text-center">
-                        <Link
-                          href={`/${locale}/dashboard/projects/${allocation.id}`}
-                        >
-                          <Button variant="ghost" size="sm">
-                            {t("budget.allocation.viewDetails")}
-                          </Button>
-                        </Link>
+                        <BudgetAllocationActions
+                          allocationId={allocation.id}
+                          allocationCode={allocation.code}
+                          locale={locale}
+                          userRole={session?.user?.role || "VIEWER"}
+                          basePath="projects"
+                        />
                       </TableCell>
                     </TableRow>
                   ))}
@@ -271,13 +274,13 @@ export default async function BudgetAllocationsPage({
                         {allocation.code} • {allocation.budget.division.nameLocal}
                       </p>
                     </div>
-                    <Link
-                      href={`/${locale}/dashboard/projects/${allocation.id}`}
-                    >
-                      <Button variant="outline" size="sm">
-                        {t("budget.allocation.viewDetails")}
-                      </Button>
-                    </Link>
+                    <BudgetAllocationActions
+                      allocationId={allocation.id}
+                      allocationCode={allocation.code}
+                      locale={locale}
+                      userRole={session?.user?.role || "VIEWER"}
+                      basePath="projects"
+                    />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 text-sm">

@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import BudgetAllocationActions from "@/components/budget-allocations/budget-allocation-actions";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -110,11 +111,12 @@ export default async function BudgetAllocationsPage({ params, searchParams }: Pr
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Link href={`/${locale}/dashboard/budget-allocations/${allocation.id}`}>
-                        <Button variant="ghost" size="sm">
-                          {t("common.view")}
-                        </Button>
-                      </Link>
+                      <BudgetAllocationActions
+                        allocationId={allocation.id}
+                        allocationCode={allocation.code}
+                        locale={locale}
+                        userRole={session.user.role}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -129,15 +131,23 @@ export default async function BudgetAllocationsPage({ params, searchParams }: Pr
                 key={allocation.id}
                 className="rounded-lg border bg-card p-4"
               >
-                <Link href={`/${locale}/dashboard/budget-allocations/${allocation.id}`} className="flex-1">
-                  <p className="font-normal hover:text-primary">{allocation.name}</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {allocation.code}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {allocation.budget.code} → {allocation.division.nameLocal}
-                  </p>
-                </Link>
+                <div className="flex items-start justify-between">
+                  <Link href={`/${locale}/dashboard/budget-allocations/${allocation.id}`} className="flex-1">
+                    <p className="font-normal hover:text-primary">{allocation.name}</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {allocation.code}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {allocation.budget.code} → {allocation.division.nameLocal}
+                    </p>
+                  </Link>
+                  <BudgetAllocationActions
+                    allocationId={allocation.id}
+                    allocationCode={allocation.code}
+                    locale={locale}
+                    userRole={session.user.role}
+                  />
+                </div>
 
                 <div className="grid grid-cols-2 gap-2 text-sm mt-3">
                   <div>

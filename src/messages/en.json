@@ -185,7 +185,9 @@
     "manageDescription": "Manage and track budget allocations to divisions",
     "edit": "Edit Budget Allocation",
     "details": "Budget Allocation Details",
-    "adminOnly": "Only administrators can allocate budgets"
+    "adminOnly": "Only administrators can allocate budgets",
+    "deleteConfirmTitle": "Delete Budget Allocation",
+    "deleteConfirmMessage": "Are you sure you want to delete budget allocation {code}? All associated expenses will also be affected."
   },
   "expense": {
     "title": "Expenses",
