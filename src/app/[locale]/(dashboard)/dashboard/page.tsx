@@ -120,7 +120,7 @@ export default async function DashboardPage({ params }: Props) {
                 <div className="flex items-center gap-2 mt-2">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">
-                    Fiscal Year: {budgetReport.data.fiscalYear}
+                    {t("reports.fiscalYear")}: {budgetReport.data.fiscalYear}
                   </span>
                 </div>
               </div>
@@ -129,26 +129,32 @@ export default async function DashboardPage({ params }: Props) {
           <CardContent>
             <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
               <div>
-                <p className="text-sm text-muted-foreground">Total Budgets</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("reports.totalBudget")}
+                </p>
                 <p className="text-2xl font-bold">
                   {budgetReport.data.totals.totalBudgets}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total Allocated</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("reports.totalAllocated")}
+                </p>
                 <p className="text-xl sm:text-2xl font-bold">
                   {formatCurrency(budgetReport.data.totals.totalAllocated)}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total Spent</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("reports.totalSpent")}
+                </p>
                 <p className="text-xl sm:text-2xl font-bold">
                   {formatCurrency(budgetReport.data.totals.totalSpent)}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">
-                  Avg. Utilization
+                  {t("reports.avgUtilization")}
                 </p>
                 <p className="text-2xl font-bold">
                   {formatNumber(budgetReport.data.totals.averageUtilization, 1)}
@@ -159,14 +165,16 @@ export default async function DashboardPage({ params }: Props) {
 
             {/* Budget Summary Chart */}
             <div className="mt-6">
-              <h4 className="font-semibold mb-3">Budget Allocation Overview</h4>
+              <h4 className="font-semibold mb-3">
+                {t("reports.budgetAllocationOverview")}
+              </h4>
               <BudgetSummaryChart data={budgetReport.data.totals} />
             </div>
 
             {budgetReport.data.summary.length > 0 && (
               <div className="mt-6">
                 <h4 className="font-semibold mb-3">
-                  Top Budgets by Utilization
+                  {t("reports.topBudgetsByUtilization")}
                 </h4>
                 <div className="space-y-2">
                   {budgetReport.data.summary
@@ -190,7 +198,7 @@ export default async function DashboardPage({ params }: Props) {
                               {formatCurrency(budget.allocated)}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {budget.expenseCount} expenses
+                              {budget.expenseCount} {t("reports.expenses")}
                             </p>
                           </div>
                           <Badge
@@ -198,8 +206,8 @@ export default async function DashboardPage({ params }: Props) {
                               budget.utilizationRate > 90
                                 ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
                                 : budget.utilizationRate > 70
-                                ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-                                : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                                  : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                             }
                           >
                             {formatNumber(budget.utilizationRate, 1)}%
@@ -233,25 +241,25 @@ export default async function DashboardPage({ params }: Props) {
           <CardContent>
             <div className="grid gap-4 grid-cols-2 sm:grid-cols-4 mb-6">
               <div>
-                <p className="text-sm text-muted-foreground">Total Expenses</p>
+                <p className="text-sm text-muted-foreground">{t("reports.totalExpenses")}</p>
                 <p className="text-2xl font-bold">
                   {expenseReport.data.totals.totalExpenses}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total Amount</p>
+                <p className="text-sm text-muted-foreground">{t("reports.totalAmount")}</p>
                 <p className="text-xl sm:text-2xl font-bold">
                   {formatCurrency(expenseReport.data.totals.totalAmount)}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Approved</p>
+                <p className="text-sm text-muted-foreground">{t("reports.approved")}</p>
                 <p className="text-xl sm:text-2xl font-bold text-green-600">
                   {formatCurrency(expenseReport.data.totals.approvedAmount)}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Pending</p>
+                <p className="text-sm text-muted-foreground">{t("reports.pending")}</p>
                 <p className="text-xl sm:text-2xl font-bold text-yellow-600">
                   {formatCurrency(expenseReport.data.totals.pendingAmount)}
                 </p>
@@ -260,14 +268,14 @@ export default async function DashboardPage({ params }: Props) {
 
             {/* Expense Summary Chart */}
             <div className="mt-6 mb-6">
-              <h4 className="font-semibold mb-3">Expenses by Category</h4>
+              <h4 className="font-semibold mb-3">{t("reports.expensesByCategory")}</h4>
               <ExpenseSummaryChart byCategory={expenseReport.data.byCategory} />
             </div>
 
             <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
               {/* By Category */}
               <div>
-                <h4 className="font-semibold mb-3">By Category</h4>
+                <h4 className="font-semibold mb-3">{t("reports.byCategory")}</h4>
                 <div className="space-y-2">
                   {(expenseReport.data.byCategory as CategoryData[])
                     .sort((a, b) => b.total - a.total)
@@ -285,7 +293,7 @@ export default async function DashboardPage({ params }: Props) {
                             {formatCurrency(cat.total)}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {cat.count} items
+                            {cat.count} {t("reports.items")}
                           </p>
                         </div>
                       </div>
@@ -295,7 +303,7 @@ export default async function DashboardPage({ params }: Props) {
 
               {/* By Department */}
               <div>
-                <h4 className="font-semibold mb-3">By Department</h4>
+                <h4 className="font-semibold mb-3">{t("reports.byDepartment")}</h4>
                 <div className="space-y-2">
                   {(expenseReport.data.byDepartment as DepartmentData[])
                     .sort((a, b) => b.total - a.total)
@@ -313,7 +321,7 @@ export default async function DashboardPage({ params }: Props) {
                             {formatCurrency(dept.total)}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {dept.count} items
+                            {dept.count} {t("reports.items")}
                           </p>
                         </div>
                       </div>
@@ -344,19 +352,19 @@ export default async function DashboardPage({ params }: Props) {
           <CardContent>
             <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 mb-6">
               <div>
-                <p className="text-sm text-muted-foreground">Departments</p>
+                <p className="text-sm text-muted-foreground">{t("reports.departments")}</p>
                 <p className="text-2xl font-bold">
                   {departmentReport.data.totals.totalDepartments}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total Users</p>
+                <p className="text-sm text-muted-foreground">{t("reports.totalUsers")}</p>
                 <p className="text-2xl font-bold">
                   {departmentReport.data.totals.totalUsers}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total Budgets</p>
+                <p className="text-sm text-muted-foreground">{t("reports.totalBudgets")}</p>
                 <p className="text-2xl font-bold">
                   {departmentReport.data.totals.totalBudgets}
                 </p>
@@ -365,7 +373,7 @@ export default async function DashboardPage({ params }: Props) {
 
             {/* Department Analysis Chart */}
             <div className="mt-6 mb-6">
-              <h4 className="font-semibold mb-3">Department Utilization</h4>
+              <h4 className="font-semibold mb-3">{t("reports.departmentUtilization")}</h4>
               <DepartmentAnalysisChart
                 analysis={departmentReport.data.analysis}
               />
@@ -384,8 +392,8 @@ export default async function DashboardPage({ params }: Props) {
                         {dept.departmentName}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {dept.userCount} users • {dept.budgetCount} budgets •{" "}
-                        {dept.expenseCount} expenses
+                        {dept.userCount} {t("reports.users")} • {dept.budgetCount} {t("reports.budgets")} •{" "}
+                        {dept.expenseCount} {t("reports.expenses")}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
@@ -395,7 +403,7 @@ export default async function DashboardPage({ params }: Props) {
                           {formatCurrency(dept.totalAllocated)}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {formatCurrency(dept.remaining)} remaining
+                          {formatCurrency(dept.remaining)} {t("reports.remaining")}
                         </p>
                       </div>
                       <Badge
@@ -403,8 +411,8 @@ export default async function DashboardPage({ params }: Props) {
                           dept.utilizationRate > 90
                             ? "bg-red-100 text-red-800"
                             : dept.utilizationRate > 70
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-green-100 text-green-800"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-green-100 text-green-800"
                         }
                       >
                         {formatNumber(dept.utilizationRate, 1)}%
@@ -436,29 +444,29 @@ export default async function DashboardPage({ params }: Props) {
           <CardContent>
             <div className="grid gap-4 grid-cols-2 sm:grid-cols-4 mb-6">
               <div>
-                <p className="text-sm text-muted-foreground">Total Approvals</p>
+                <p className="text-sm text-muted-foreground">{t("reports.totalApprovals")}</p>
                 <p className="text-2xl font-bold">
                   {approvalReport.data.statistics.totalApprovals}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Approved</p>
+                <p className="text-sm text-muted-foreground">{t("reports.approved")}</p>
                 <p className="text-2xl font-bold text-green-600">
                   {approvalReport.data.statistics.approvedCount}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Rejected</p>
+                <p className="text-sm text-muted-foreground">{t("reports.rejected")}</p>
                 <p className="text-2xl font-bold text-red-600">
                   {approvalReport.data.statistics.rejectedCount}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Avg. Time</p>
+                <p className="text-sm text-muted-foreground">{t("reports.avgTime")}</p>
                 <p className="text-2xl font-bold">
                   {formatNumber(
                     approvalReport.data.statistics.avgOverallTime,
-                    1
+                    1,
                   )}
                   h
                 </p>
@@ -467,7 +475,7 @@ export default async function DashboardPage({ params }: Props) {
 
             {/* Approval Timeline Chart */}
             <div className="mt-6 mb-6">
-              <h4 className="font-semibold mb-3">Approval Duration Trends</h4>
+              <h4 className="font-semibold mb-3">{t("reports.approvalDurationTrends")}</h4>
               <ApprovalTimelineChart
                 byLevel={approvalReport.data.statistics.byLevel}
               />
@@ -475,7 +483,7 @@ export default async function DashboardPage({ params }: Props) {
 
             {/* By Level */}
             <div>
-              <h4 className="font-semibold mb-3">Average Time by Level</h4>
+              <h4 className="font-semibold mb-3">{t("reports.avgTimeByLevel")}</h4>
               <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {(
                   approvalReport.data.statistics.byLevel as ApprovalLevel[]
@@ -485,9 +493,9 @@ export default async function DashboardPage({ params }: Props) {
                     className="flex items-center justify-between p-3 border rounded-lg"
                   >
                     <div>
-                      <p className="text-sm font-medium">Level {level.level}</p>
+                      <p className="text-sm font-medium">{t("reports.level")} {level.level}</p>
                       <p className="text-xs text-muted-foreground">
-                        {level.count} approvals
+                        {level.count} {t("reports.approvals")}
                       </p>
                     </div>
                     <div className="text-right">
@@ -515,7 +523,7 @@ export default async function DashboardPage({ params }: Props) {
           <CardContent className="p-12 text-center">
             <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <p className="text-muted-foreground">
-              Unable to load some reports. Please try again later.
+              {t("reports.unableToLoadReports")}
             </p>
           </CardContent>
         </Card>

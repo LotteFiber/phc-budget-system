@@ -7,27 +7,31 @@ import { UserRole } from "@prisma/client";
 import { z } from "zod";
 
 // Validation schema for form input (simplified version 2)
-const budgetFormSchema = z.object({
-  fiscalYear: z.number().int().min(2543).max(2643), // Buddhist calendar years
-  categoryId: z.string().min(1, "Category is required"),
-  planId: z.string().optional(),
-  outputId: z.string().optional(),
-  activityId: z.string().optional(),
-  allocatedAmount: z.number().positive("Amount must be positive"),
-  // Custom name fields
-  customPlanName: z.string().optional(),
-  customOutputName: z.string().optional(),
-  customActivityName: z.string().optional(),
-}).refine(
-  (data) => data.planId || data.customPlanName,
-  { message: "Plan is required", path: ["planId"] }
-).refine(
-  (data) => data.outputId || data.customOutputName,
-  { message: "Output is required", path: ["outputId"] }
-).refine(
-  (data) => data.activityId || data.customActivityName,
-  { message: "Activity is required", path: ["activityId"] }
-);
+const budgetFormSchema = z
+  .object({
+    fiscalYear: z.number().int().min(2543).max(2643), // Buddhist calendar years
+    categoryId: z.string().min(1, "Category is required"),
+    planId: z.string().optional(),
+    outputId: z.string().optional(),
+    activityId: z.string().optional(),
+    allocatedAmount: z.number().positive("Amount must be positive"),
+    // Custom name fields
+    customPlanName: z.string().optional(),
+    customOutputName: z.string().optional(),
+    customActivityName: z.string().optional(),
+  })
+  .refine((data) => data.planId || data.customPlanName, {
+    message: "Plan is required",
+    path: ["planId"],
+  })
+  .refine((data) => data.outputId || data.customOutputName, {
+    message: "Output is required",
+    path: ["outputId"],
+  })
+  .refine((data) => data.activityId || data.customActivityName, {
+    message: "Activity is required",
+    path: ["activityId"],
+  });
 
 // Full schema for database operations
 const budgetSchema = z.object({
@@ -62,10 +66,13 @@ export async function getBudgets(filters?: {
       throw new Error("Unauthorized");
     }
 
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     // Non-admins can only see their department's budgets
-    if (session.user.role !== UserRole.SUPER_ADMIN && session.user.role !== UserRole.ADMIN) {
+    if (
+      session.user.role !== UserRole.SUPER_ADMIN &&
+      session.user.role !== UserRole.ADMIN
+    ) {
       where.divisionId = session.user.divisionId;
     } else if (filters?.divisionId) {
       where.divisionId = filters.divisionId;
@@ -217,7 +224,7 @@ export async function getBudgetById(id: string) {
           ...alloc,
           allocatedAmount: Number(alloc.allocatedAmount),
         })),
-      }
+      },
     };
   } catch (error) {
     console.error("Error fetching budget:", error);
@@ -281,7 +288,10 @@ export async function createBudget(data: BudgetFormInput) {
     // Create custom Activity if needed
     if (formData.customActivityName && !activityId) {
       if (!outputId) {
-        return { success: false, error: "Output is required to create Activity" };
+        return {
+          success: false,
+          error: "Output is required to create Activity",
+        };
       }
       const timestamp = Date.now().toString(36).toUpperCase();
       const newActivity = await prisma.activity.create({
@@ -300,7 +310,9 @@ export async function createBudget(data: BudgetFormInput) {
     const [plan, output, activity] = await Promise.all([
       planId ? prisma.plan.findUnique({ where: { id: planId } }) : null,
       outputId ? prisma.output.findUnique({ where: { id: outputId } }) : null,
-      activityId ? prisma.activity.findUnique({ where: { id: activityId } }) : null,
+      activityId
+        ? prisma.activity.findUnique({ where: { id: activityId } })
+        : null,
     ]);
 
     if (!plan || !output || !activity) {
@@ -373,11 +385,14 @@ export async function createBudget(data: BudgetFormInput) {
       data: {
         ...budget,
         allocatedAmount: Number(budget.allocatedAmount),
-      }
+      },
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.issues[0]?.message || "Validation error" };
+      return {
+        success: false,
+        error: error.issues[0]?.message || "Validation error",
+      };
     }
     console.error("Error creating budget:", error);
     return { success: false, error: "Failed to create budget" };
@@ -410,7 +425,9 @@ export async function updateBudget(id: string, data: Partial<BudgetFormInput>) {
     }
 
     // Prepare update data
-    const updateData: any = { ...data };
+    const updateData: Partial<
+      BudgetFormInput & { name?: string; nameLocal?: string }
+    > = { ...data };
 
     // If plan or activity changed, regenerate name
     if (data.planId || data.activityId) {
@@ -447,7 +464,7 @@ export async function updateBudget(id: string, data: Partial<BudgetFormInput>) {
       data: {
         ...budget,
         allocatedAmount: Number(budget.allocatedAmount),
-      }
+      },
     };
   } catch (error) {
     console.error("Error updating budget:", error);
@@ -475,13 +492,19 @@ export async function deleteBudget(id: string) {
     }
 
     // Only admins can delete budgets
-    if (session.user.role !== UserRole.SUPER_ADMIN && session.user.role !== UserRole.ADMIN) {
+    if (
+      session.user.role !== UserRole.SUPER_ADMIN &&
+      session.user.role !== UserRole.ADMIN
+    ) {
       return { success: false, error: "Insufficient permissions" };
     }
 
     // Can't delete if has expenses
     if (existing.expenses.length > 0) {
-      return { success: false, error: "Cannot delete budget with existing expenses" };
+      return {
+        success: false,
+        error: "Cannot delete budget with existing expenses",
+      };
     }
 
     await prisma.budget.delete({
@@ -570,10 +593,20 @@ export async function getBudgetStatistics(fiscalYear?: number) {
     }
 
     const currentYear = fiscalYear || new Date().getFullYear();
-    const where: any = { fiscalYear: currentYear };
+
+    // Define the type for the where clause
+    interface BudgetWhere {
+      fiscalYear: number;
+      divisionId?: string;
+    }
+
+    const where: BudgetWhere = { fiscalYear: currentYear };
 
     // Non-admins see only their department
-    if (session.user.role !== UserRole.SUPER_ADMIN && session.user.role !== UserRole.ADMIN) {
+    if (
+      session.user.role !== UserRole.SUPER_ADMIN &&
+      session.user.role !== UserRole.ADMIN
+    ) {
       where.divisionId = session.user.divisionId;
     }
 
@@ -590,7 +623,10 @@ export async function getBudgetStatistics(fiscalYear?: number) {
       },
     });
 
-    const totalBudget = budgets.reduce((sum, b) => sum + Number(b.allocatedAmount), 0);
+    const totalBudget = budgets.reduce(
+      (sum, b) => sum + Number(b.allocatedAmount),
+      0
+    );
     const totalSpent = budgets.reduce(
       (sum, b) => sum + b.expenses.reduce((s, e) => s + Number(e.amount), 0),
       0
