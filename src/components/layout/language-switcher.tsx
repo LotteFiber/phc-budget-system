@@ -24,7 +24,7 @@ export default function LanguageSwitcher() {
       className="gap-2"
     >
       <Languages className="h-4 w-4" />
-      {locale === "en" ? "ไทย" : "EN"}
+      {locale === "en" ? "EN" : "ไทย"}
     </Button>
   );
 }

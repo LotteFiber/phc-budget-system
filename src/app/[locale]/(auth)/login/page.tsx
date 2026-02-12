@@ -55,7 +55,7 @@ export default function LoginPage() {
       setError(
         t("error.general") +
           " - " +
-          (error instanceof Error ? error.message : "Unknown error")
+          (error instanceof Error ? error.message : "Unknown error"),
       );
     } finally {
       setIsLoading(false);

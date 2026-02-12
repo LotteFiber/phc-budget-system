@@ -38,13 +38,13 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
 
-          <Button variant="ghost" size="icon" className="relative">
+          {/* <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
             <span className="absolute right-1 top-1 flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75"></span>
               <span className="relative inline-flex h-2 w-2 rounded-full bg-destructive"></span>
             </span>
-          </Button>
+          </Button> */}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -70,7 +70,10 @@ export default function Header() {
                 {t("nav.settings")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+              <DropdownMenuItem
+                onClick={handleSignOut}
+                className="text-destructive"
+              >
                 <LogOut className="mr-2 h-4 w-4" />
                 {t("nav.logout")}
               </DropdownMenuItem>
