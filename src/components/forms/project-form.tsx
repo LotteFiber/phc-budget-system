@@ -75,6 +75,11 @@ export default function ProjectForm({
     e.preventDefault();
     setError("");
 
+    if (!selectedBudget) {
+      setError("Please select a budget");
+      return;
+    }
+
     const allocatedAmount = parseFloat(formData.allocatedAmount);
     if (isNaN(allocatedAmount) || allocatedAmount <= 0) {
       setError("Please enter a valid amount");
@@ -85,6 +90,7 @@ export default function ProjectForm({
       nameLocal: formData.nameLocal,
       descriptionLocal: formData.descriptionLocal || undefined,
       budgetId: formData.budgetId,
+      divisionId: selectedBudget.division?.nameLocal || "",
       allocatedAmount,
       startDate: new Date(formData.startDate),
       endDate: new Date(formData.endDate),
@@ -166,7 +172,7 @@ export default function ProjectForm({
 
       {/* Description Local (Thai) */}
       <div className="space-y-2">
-        <Label htmlFor="descriptionLocal">รายละเอียด (Thai)</Label>
+        <Label htmlFor="descriptionLocal">รายละเอียด</Label>
         <Textarea
           id="descriptionLocal"
           value={formData.descriptionLocal}
@@ -180,7 +186,7 @@ export default function ProjectForm({
       {/* Allocated Amount */}
       <div className="space-y-2">
         <Label htmlFor="allocatedAmount">
-          {t("budget.allocatedAmount")} (THB){" "}
+          {t("budget.allocatedAmount")} (บาท){" "}
           <span className="text-red-500">*</span>
         </Label>
         <Input

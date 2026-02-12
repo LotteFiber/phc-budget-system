@@ -216,7 +216,7 @@ export default function BudgetAllocationForm({
       {/* Allocated Amount */}
       <div className="space-y-2">
         <Label htmlFor="allocatedAmount">
-          {t("budget.allocatedAmount")} (THB){" "}
+          {t("budget.allocatedAmount")} (บาท){" "}
           <span className="text-red-500">*</span>
         </Label>
         <Input

@@ -128,8 +128,12 @@ export default function BudgetForm({
         allocatedAmount: Number(formData.allocatedAmount),
         // Custom name fields (only if using custom)
         customPlanName: useCustomPlan ? formData.customPlanName : undefined,
-        customOutputName: useCustomOutput ? formData.customOutputName : undefined,
-        customActivityName: useCustomActivity ? formData.customActivityName : undefined,
+        customOutputName: useCustomOutput
+          ? formData.customOutputName
+          : undefined,
+        customActivityName: useCustomActivity
+          ? formData.customActivityName
+          : undefined,
       };
 
       const result = initialData
@@ -217,7 +221,10 @@ export default function BudgetForm({
                 }}
                 disabled={isLoading}
               />
-              <Label htmlFor="useCustomPlan" className="text-sm font-normal cursor-pointer">
+              <Label
+                htmlFor="useCustomPlan"
+                className="text-sm font-normal cursor-pointer"
+              >
                 {t("budget.createCustom")}
               </Label>
             </div>
@@ -277,7 +284,10 @@ export default function BudgetForm({
                 }}
                 disabled={isLoading || useCustomPlan}
               />
-              <Label htmlFor="useCustomOutput" className="text-sm font-normal cursor-pointer">
+              <Label
+                htmlFor="useCustomOutput"
+                className="text-sm font-normal cursor-pointer"
+              >
                 {t("budget.createCustom")}
               </Label>
             </div>
@@ -334,7 +344,10 @@ export default function BudgetForm({
                 }}
                 disabled={isLoading || useCustomOutput}
               />
-              <Label htmlFor="useCustomActivity" className="text-sm font-normal cursor-pointer">
+              <Label
+                htmlFor="useCustomActivity"
+                className="text-sm font-normal cursor-pointer"
+              >
                 {t("budget.createCustom")}
               </Label>
             </div>
@@ -373,7 +386,9 @@ export default function BudgetForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="allocatedAmount">{t("budget.allocated")} (฿) *</Label>
+          <Label htmlFor="allocatedAmount">
+            {t("budget.allocated")} (บาท) *
+          </Label>
           <Input
             id="allocatedAmount"
             type="number"
@@ -404,8 +419,8 @@ export default function BudgetForm({
           {isLoading
             ? t("common.saving")
             : initialData
-            ? t("common.update")
-            : t("common.create")}
+              ? t("common.update")
+              : t("common.create")}
         </Button>
         <Button
           type="button"

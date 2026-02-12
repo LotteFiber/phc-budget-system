@@ -15,7 +15,10 @@ export default async function NewBudgetAllocationPage({ params }: Props) {
   const session = await auth();
 
   // Only Admin and Super Admin can access this page
-  if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPER_ADMIN") {
+  if (
+    session?.user?.role !== "ADMIN" &&
+    session?.user?.role !== "SUPER_ADMIN"
+  ) {
     redirect(`/${locale}/dashboard`);
   }
 
@@ -29,8 +32,12 @@ export default async function NewBudgetAllocationPage({ params }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">{t("budgetAllocation.createNew")}</h1>
-        <p className="text-muted-foreground">{t("budgetAllocation.createDescription")}</p>
+        <h1 className="text-3xl font-bold tracking-tight">
+          {t("budgetAllocation.createNew")}
+        </h1>
+        <p className="text-muted-foreground">
+          {t("budgetAllocation.createDescription")}
+        </p>
       </div>
 
       <div className="rounded-lg border bg-card p-6">
