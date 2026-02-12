@@ -35,7 +35,6 @@ type Budget = {
 
 type Division = {
   id: string;
-  code: string;
   nameLocal: string;
 };
 
@@ -176,7 +175,7 @@ export default function BudgetAllocationForm({
           <SelectContent>
             {divisions.map((div) => (
               <SelectItem key={div.id} value={div.id}>
-                {div.code} - {div.nameLocal}
+                {div.nameLocal}
               </SelectItem>
             ))}
           </SelectContent>
