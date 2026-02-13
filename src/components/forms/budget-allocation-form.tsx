@@ -48,8 +48,6 @@ type BudgetAllocationFormProps = {
     budgetId: string;
     divisionId: string;
     allocatedAmount: number;
-    startDate: string;
-    endDate: string;
   };
   locale: string;
 };
@@ -71,8 +69,6 @@ export default function BudgetAllocationForm({
     budgetId: initialData?.budgetId || "",
     divisionId: initialData?.divisionId || "",
     allocatedAmount: initialData?.allocatedAmount?.toString() || "",
-    startDate: initialData?.startDate || "",
-    endDate: initialData?.endDate || "",
   });
 
   const selectedBudget = budgets.find((b) => b.id === formData.budgetId);
@@ -96,8 +92,6 @@ export default function BudgetAllocationForm({
       budgetId: formData.budgetId,
       divisionId: formData.divisionId,
       allocatedAmount,
-      startDate: new Date(formData.startDate),
-      endDate: new Date(formData.endDate),
     };
 
     startTransition(async () => {
@@ -182,7 +176,7 @@ export default function BudgetAllocationForm({
         </Select>
       </div>
 
-      {/* Project Name (Thai) */}
+      {/* Project Name */}
       <div className="space-y-2">
         <Label htmlFor="nameLocal">
           {t("budget.allocation.projectNameTh")}{" "}
@@ -201,7 +195,7 @@ export default function BudgetAllocationForm({
 
       {/* Description (Thai) */}
       <div className="space-y-2">
-        <Label htmlFor="descriptionLocal">รายละเอียด</Label>
+        <Label htmlFor="descriptionLocal">{t("common.description")}</Label>
         <Textarea
           id="descriptionLocal"
           value={formData.descriptionLocal}
@@ -215,7 +209,7 @@ export default function BudgetAllocationForm({
       {/* Allocated Amount */}
       <div className="space-y-2">
         <Label htmlFor="allocatedAmount">
-          {t("budget.allocatedAmount")} (บาท){" "}
+          {t("budget.allocatedAmount")} ({t("common.currencyUnit")}){" "}
           <span className="text-red-500">*</span>
         </Label>
         <Input
@@ -238,46 +232,14 @@ export default function BudgetAllocationForm({
             }`}
           >
             {parseFloat(formData.allocatedAmount) > availableBudget
-              ? `⚠️ Amount exceeds available budget by ${(
-                  parseFloat(formData.allocatedAmount) - availableBudget
-                ).toLocaleString()} THB`
-              : `Remaining after allocation: ${(
-                  availableBudget - parseFloat(formData.allocatedAmount)
-                ).toLocaleString()} THB`}
+              ? t("budget.allocation.exceedsBudgetBy", {
+                  amount: (parseFloat(formData.allocatedAmount) - availableBudget).toLocaleString()
+                })
+              : t("budget.allocation.remainingAfterAllocation", {
+                  amount: (availableBudget - parseFloat(formData.allocatedAmount)).toLocaleString()
+                })}
           </p>
         )}
-      </div>
-
-      {/* Start Date */}
-      <div className="space-y-2">
-        <Label htmlFor="startDate">
-          {t("budget.startDate")} <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          id="startDate"
-          type="date"
-          value={formData.startDate}
-          onChange={(e) =>
-            setFormData({ ...formData, startDate: e.target.value })
-          }
-          required
-        />
-      </div>
-
-      {/* End Date */}
-      <div className="space-y-2">
-        <Label htmlFor="endDate">
-          {t("budget.endDate")} <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          id="endDate"
-          type="date"
-          value={formData.endDate}
-          onChange={(e) =>
-            setFormData({ ...formData, endDate: e.target.value })
-          }
-          required
-        />
       </div>
 
       {/* Form Actions */}

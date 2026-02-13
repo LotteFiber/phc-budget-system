@@ -42,7 +42,8 @@
     "description": "Description",
     "confirmDelete": "Confirm Deletion",
     "actionCannotBeUndone": "This action cannot be undone.",
-    "unexpectedError": "An unexpected error occurred"
+    "unexpectedError": "An unexpected error occurred",
+    "currencyUnit": "baht"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -134,7 +135,7 @@
       "editDescription": "Update the project details",
       "noBudgetsAvailable": "No budgets with available funds found. Please create a budget first.",
       "projectNameEn": "Project Name (English)",
-      "projectNameTh": "Project Name (Thai)",
+      "projectNameTh": "Project Name",
       "allocationDetails": "Project Details",
       "parentBudget": "Parent Budget",
       "noExpenses": "No expenses recorded for this project yet.",
@@ -162,11 +163,12 @@
       "noProjects": "No projects found",
       "addNewProject": "Add New Project",
       "disburseDescription": "Create a new expense record for a project.",
-      "selectProject": "Select project",
       "budgetBalance": "Budget Balance",
       "disburseSuccess": "Disbursement created successfully",
       "disburseFailed": "Failed to create disbursement",
-      "submitDisbursement": "Submit Disbursement"
+      "submitDisbursement": "Submit Disbursement",
+      "remainingAfterAllocation": "Remaining after allocation: {amount} THB",
+      "exceedsBudgetBy": "⚠️ Amount exceeds available budget by {amount} THB"
     },
     "statuses": {
       "draft": "Draft",
@@ -199,7 +201,6 @@
     "list": "Expense List",
     "details": "Expense Details",
     "code": "Expense Code",
-    "title": "Title",
     "description": "Description",
     "budget": "Budget",
     "category": "Category",
@@ -336,6 +337,8 @@
     "edit": "Edit User",
     "list": "User List",
     "name": "Name",
+    "nameEn": "Name (English)",
+    "nameTh": "Name (Thai)",
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm Password",

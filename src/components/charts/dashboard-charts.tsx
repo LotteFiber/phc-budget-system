@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   PieChart,
   Pie,
@@ -18,8 +19,16 @@ import {
   AreaChart,
 } from "recharts";
 
+function useHasMounted() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return mounted;
+}
+
 // Budget Summary Donut Chart
 export function BudgetSummaryChart({ data }: { data: any }) {
+  const mounted = useHasMounted();
+  if (!mounted) return <div style={{ height: 300 }} />;
   const chartData = [
     { name: "Spent", value: data.totalSpent, color: "#ef4444" },
     {
@@ -66,6 +75,8 @@ export function BudgetSummaryChart({ data }: { data: any }) {
 
 // Expense Summary Bar Chart
 export function ExpenseSummaryChart({ byCategory }: { byCategory: any[] }) {
+  const mounted = useHasMounted();
+  if (!mounted) return <div style={{ height: 350 }} />;
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("th-TH", {
       notation: "compact",
@@ -112,6 +123,8 @@ export function ExpenseSummaryChart({ byCategory }: { byCategory: any[] }) {
 
 // Department Analysis Horizontal Bar Chart
 export function DepartmentAnalysisChart({ analysis }: { analysis: any[] }) {
+  const mounted = useHasMounted();
+  if (!mounted) return <div style={{ height: 400 }} />;
   const chartData = analysis
     .slice(0, 10)
     .map((dept) => ({
@@ -159,6 +172,8 @@ export function DepartmentAnalysisChart({ analysis }: { analysis: any[] }) {
 
 // Approval Timeline Area Chart
 export function ApprovalTimelineChart({ byLevel }: { byLevel: any[] }) {
+  const mounted = useHasMounted();
+  if (!mounted) return <div style={{ height: 300 }} />;
   const chartData = byLevel
     .sort((a, b) => a.level - b.level)
     .map((level) => ({

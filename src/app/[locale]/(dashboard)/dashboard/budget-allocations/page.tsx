@@ -19,19 +19,27 @@ type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-export default async function BudgetAllocationsPage({ params, searchParams }: Props) {
+export default async function BudgetAllocationsPage({
+  params,
+  searchParams,
+}: Props) {
   const { locale } = await params;
   const t = await getTranslations({ locale });
   const session = await auth();
 
   // Only Admin and Super Admin can access this page
-  if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPER_ADMIN") {
+  if (
+    session?.user?.role !== "ADMIN" &&
+    session?.user?.role !== "SUPER_ADMIN"
+  ) {
     redirect(`/${locale}/dashboard`);
   }
 
   // Fetch budget allocations
   const allocationsResult = await getBudgetAllocations({});
-  const allocations = allocationsResult.success ? allocationsResult.data || [] : [];
+  const allocations = allocationsResult.success
+    ? allocationsResult.data || []
+    : [];
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("th-TH", {
@@ -84,13 +92,17 @@ export default async function BudgetAllocationsPage({ params, searchParams }: Pr
               <TableBody>
                 {allocations.map((allocation) => (
                   <TableRow key={allocation.id}>
-                    <TableCell className="font-medium">{allocation.code}</TableCell>
+                    <TableCell className="font-medium">
+                      {allocation.code}
+                    </TableCell>
                     <TableCell>
                       <p className="font-normal">{allocation.name}</p>
                     </TableCell>
                     <TableCell>
                       <p className="text-sm">{allocation.budget.code}</p>
-                      <p className="text-xs text-muted-foreground">{allocation.budget.nameLocal}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {allocation.budget.nameLocal}
+                      </p>
                     </TableCell>
                     <TableCell>{allocation.division.nameLocal}</TableCell>
                     <TableCell className="text-right">
@@ -132,8 +144,13 @@ export default async function BudgetAllocationsPage({ params, searchParams }: Pr
                 className="rounded-lg border bg-card p-4"
               >
                 <div className="flex items-start justify-between">
-                  <Link href={`/${locale}/dashboard/budget-allocations/${allocation.id}`} className="flex-1">
-                    <p className="font-normal hover:text-primary">{allocation.name}</p>
+                  <Link
+                    href={`/${locale}/dashboard/budget-allocations/${allocation.id}`}
+                    className="flex-1"
+                  >
+                    <p className="font-normal hover:text-primary">
+                      {allocation.name}
+                    </p>
                     <p className="text-sm text-muted-foreground mt-1">
                       {allocation.code}
                     </p>
@@ -159,9 +176,7 @@ export default async function BudgetAllocationsPage({ params, searchParams }: Pr
                     </p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">
-                      {t("budget.spent")}
-                    </p>
+                    <p className="text-muted-foreground">{t("budget.spent")}</p>
                     <p className="font-semibold">
                       {formatCurrency(allocation.spentAmount)}
                     </p>
@@ -185,7 +200,9 @@ export default async function BudgetAllocationsPage({ params, searchParams }: Pr
         </>
       ) : (
         <div className="rounded-lg border bg-card p-12 text-center">
-          <p className="text-muted-foreground mb-4">{t("budget.allocation.noProjects")}</p>
+          <p className="text-muted-foreground mb-4">
+            {t("budget.allocation.noProjects")}
+          </p>
           <Link href={`/${locale}/dashboard/budget-allocations/new`}>
             <Button>{t("budgetAllocation.createFirst")}</Button>
           </Link>

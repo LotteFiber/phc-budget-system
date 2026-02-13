@@ -387,7 +387,7 @@ export default function BudgetForm({
 
         <div className="space-y-2">
           <Label htmlFor="allocatedAmount">
-            {t("budget.allocated")} (บาท) *
+            {t("budget.allocated")} ({t("common.currencyUnit")}) *
           </Label>
           <Input
             id="allocatedAmount"

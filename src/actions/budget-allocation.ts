@@ -12,8 +12,6 @@ const budgetAllocationSchema = z.object({
   budgetId: z.string().min(1, "Budget is required"),
   divisionId: z.string().min(1, "Division is required"),
   allocatedAmount: z.number().positive("Amount must be positive"),
-  startDate: z.date(),
-  endDate: z.date(),
 });
 
 type BudgetAllocationInput = z.infer<typeof budgetAllocationSchema>;
@@ -223,8 +221,8 @@ export async function createBudgetAllocation(data: BudgetAllocationInput) {
         budgetId: validatedData.budgetId,
         divisionId: validatedData.divisionId,
         allocatedAmount: validatedData.allocatedAmount,
-        startDate: validatedData.startDate,
-        endDate: validatedData.endDate,
+        startDate: new Date(),
+        endDate: new Date(new Date().getFullYear() + 1, 2, 31),
         createdById: session.user.id,
       },
       include: {
@@ -329,8 +327,6 @@ export async function updateBudgetAllocation(
         description: data.descriptionLocal || null,
         descriptionLocal: data.descriptionLocal || null,
         allocatedAmount: data.allocatedAmount,
-        startDate: data.startDate,
-        endDate: data.endDate,
       },
       include: {
         budget: {

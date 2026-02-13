@@ -28,7 +28,9 @@ type Budget = {
   spentAmount: number;
   remainingAmount: number;
   fiscalYear: number;
+  divisionId: string;
   division: {
+    id: string;
     nameLocal: string;
   };
 };
@@ -41,8 +43,6 @@ type ProjectFormProps = {
     descriptionLocal?: string;
     budgetId: string;
     allocatedAmount: number;
-    startDate: string;
-    endDate: string;
   };
   locale: string;
 };
@@ -62,8 +62,6 @@ export default function ProjectForm({
     descriptionLocal: initialData?.descriptionLocal || "",
     budgetId: initialData?.budgetId || "",
     allocatedAmount: initialData?.allocatedAmount?.toString() || "",
-    startDate: initialData?.startDate || "",
-    endDate: initialData?.endDate || "",
   });
 
   const selectedBudget = budgets.find((b) => b.id === formData.budgetId);
@@ -90,10 +88,8 @@ export default function ProjectForm({
       nameLocal: formData.nameLocal,
       descriptionLocal: formData.descriptionLocal || undefined,
       budgetId: formData.budgetId,
-      divisionId: selectedBudget.division?.nameLocal || "",
+      divisionId: selectedBudget.divisionId,
       allocatedAmount,
-      startDate: new Date(formData.startDate),
-      endDate: new Date(formData.endDate),
     };
 
     startTransition(async () => {
@@ -172,7 +168,7 @@ export default function ProjectForm({
 
       {/* Description Local (Thai) */}
       <div className="space-y-2">
-        <Label htmlFor="descriptionLocal">รายละเอียด</Label>
+        <Label htmlFor="descriptionLocal">{t("common.description")}</Label>
         <Textarea
           id="descriptionLocal"
           value={formData.descriptionLocal}
@@ -186,7 +182,7 @@ export default function ProjectForm({
       {/* Allocated Amount */}
       <div className="space-y-2">
         <Label htmlFor="allocatedAmount">
-          {t("budget.allocatedAmount")} (บาท){" "}
+          {t("budget.allocatedAmount")} ({t("common.currencyUnit")}){" "}
           <span className="text-red-500">*</span>
         </Label>
         <Input
@@ -217,38 +213,6 @@ export default function ProjectForm({
                 ).toLocaleString()} THB`}
           </p>
         )}
-      </div>
-
-      {/* Start Date */}
-      <div className="space-y-2">
-        <Label htmlFor="startDate">
-          {t("budget.startDate")} <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          id="startDate"
-          type="date"
-          value={formData.startDate}
-          onChange={(e) =>
-            setFormData({ ...formData, startDate: e.target.value })
-          }
-          required
-        />
-      </div>
-
-      {/* End Date */}
-      <div className="space-y-2">
-        <Label htmlFor="endDate">
-          {t("budget.endDate")} <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          id="endDate"
-          type="date"
-          value={formData.endDate}
-          onChange={(e) =>
-            setFormData({ ...formData, endDate: e.target.value })
-          }
-          required
-        />
       </div>
 
       {/* Form Actions */}

@@ -42,7 +42,8 @@
     "description": "รายละเอียด",
     "confirmDelete": "ยืนยันการลบ",
     "actionCannotBeUndone": "การดำเนินการนี้ไม่สามารถย้อนกลับได้",
-    "unexpectedError": "เกิดข้อผิดพลาดที่ไม่คาดคิด"
+    "unexpectedError": "เกิดข้อผิดพลาดที่ไม่คาดคิด",
+    "currencyUnit": "บาท"
   },
   "nav": {
     "dashboard": "แดชบอร์ด",
@@ -165,7 +166,9 @@
       "budgetBalance": "งบประมาณคงเหลือ",
       "disburseSuccess": "สร้างการเบิกจ่ายสำเร็จ",
       "disburseFailed": "ไม่สามารถสร้างการเบิกจ่ายได้",
-      "submitDisbursement": "ส่งการเบิกจ่าย"
+      "submitDisbursement": "ส่งการเบิกจ่าย",
+      "remainingAfterAllocation": "คงเหลือหลังจัดสรร: {amount} บาท",
+      "exceedsBudgetBy": "⚠️ จำนวนเงินเกินงบประมาณที่มีอยู่ {amount} บาท"
     },
     "statuses": {
       "draft": "แบบร่าง",
@@ -334,6 +337,8 @@
     "edit": "แก้ไขผู้ใช้งาน",
     "list": "รายการผู้ใช้งาน",
     "name": "ชื่อ",
+    "nameEn": "ชื่อ (ภาษาอังกฤษ)",
+    "nameTh": "ชื่อ (ไทย)",
     "email": "อีเมล",
     "password": "รหัสผ่าน",
     "confirmPassword": "ยืนยันรหัสผ่าน",

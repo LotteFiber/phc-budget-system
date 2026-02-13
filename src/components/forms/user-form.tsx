@@ -104,7 +104,7 @@ export default function UserForm({ user, locale }: UserFormProps) {
         password?: string;
       } = {
         email: formData.email,
-        name: formData.name,
+        name: formData.nameLocal || formData.name,
         nameLocal: formData.nameLocal || undefined,
         role: formData.role as
           | "SUPER_ADMIN"
@@ -171,24 +171,9 @@ export default function UserForm({ user, locale }: UserFormProps) {
               />
             </div>
 
-            {/* Name */}
-            <div className="space-y-2">
-              <Label htmlFor="name">
-                {t("users.name")} <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleChange("name", e.target.value)}
-                placeholder="John Doe"
-                required
-                disabled={isLoading}
-              />
-            </div>
-
             {/* Name Local */}
             <div className="space-y-2">
-              <Label htmlFor="nameLocal">{t("users.name")} (ไทย)</Label>
+              <Label htmlFor="nameLocal">{t("users.name")} <span className="text-destructive">*</span></Label>
               <Input
                 id="nameLocal"
                 value={formData.nameLocal}
