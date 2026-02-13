@@ -28,16 +28,15 @@ async function main() {
   await prisma.budgetCategory.deleteMany({});
   await prisma.division.deleteMany({});
 
-  const [mainDept] =
-    await prisma.division.createManyAndReturn({
-      data: [
-        {
-          nameLocal: "กองสุขภาพปฐมภูมิ",
-          descriptionLocal: "กองสุขภาพปฐมภูมิ",
-          isActive: true,
-        },
-      ],
-    });
+  const [mainDept] = await prisma.division.createManyAndReturn({
+    data: [
+      {
+        nameLocal: "กองสุขภาพปฐมภูมิ",
+        descriptionLocal: "กองสุขภาพปฐมภูมิ",
+        isActive: true,
+      },
+    ],
+  });
 
   console.log("Created divisions");
 
