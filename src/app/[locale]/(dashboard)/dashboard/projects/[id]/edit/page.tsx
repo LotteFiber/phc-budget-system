@@ -45,8 +45,7 @@ export default async function EditBudgetAllocationPage({ params }: Props) {
 
   // Filter to include current budget and budgets with remaining amount > 0
   const availableBudgets = budgets.filter(
-    (budget) =>
-      budget.id === allocation.budgetId || budget.remainingAmount > 0
+    (budget) => budget.id === allocation.budgetId || budget.remainingAmount > 0,
   );
 
   // Format initial data for the form
@@ -54,7 +53,6 @@ export default async function EditBudgetAllocationPage({ params }: Props) {
     id: allocation.id,
     name: allocation.name,
     nameLocal: allocation.name,
-    description: allocation.description || undefined,
     description: allocation.description || undefined,
     budgetId: allocation.budgetId,
     allocatedAmount: Number(allocation.allocatedAmount),
