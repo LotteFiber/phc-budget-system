@@ -13,20 +13,25 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  LineChart,
-  Line,
   Area,
   AreaChart,
 } from "recharts";
 
 function useHasMounted() {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
+  }, []);
   return mounted;
 }
 
 // Budget Summary Donut Chart
-export function BudgetSummaryChart({ data }: { data: any }) {
+export function BudgetSummaryChart({
+  data,
+}: {
+  data: { totalSpent: number; totalAllocated: number };
+}) {
   const mounted = useHasMounted();
   if (!mounted) return <div style={{ height: 300 }} />;
   const chartData = [
@@ -66,7 +71,9 @@ export function BudgetSummaryChart({ data }: { data: any }) {
             <Cell key={`cell-${index}`} fill={entry.color} />
           ))}
         </Pie>
-        <Tooltip formatter={(value: number) => formatCurrency(value)} />
+        <Tooltip
+          formatter={(value: number | undefined) => formatCurrency(value ?? 0)}
+        />
         <Legend />
       </PieChart>
     </ResponsiveContainer>
@@ -74,7 +81,11 @@ export function BudgetSummaryChart({ data }: { data: any }) {
 }
 
 // Expense Summary Bar Chart
-export function ExpenseSummaryChart({ byCategory }: { byCategory: any[] }) {
+export function ExpenseSummaryChart({
+  byCategory,
+}: {
+  byCategory: { categoryName: string; total: number; count: number }[];
+}) {
   const mounted = useHasMounted();
   if (!mounted) return <div style={{ height: 350 }} />;
   const formatCurrency = (value: number) => {
@@ -107,12 +118,12 @@ export function ExpenseSummaryChart({ byCategory }: { byCategory: any[] }) {
         <XAxis type="number" tickFormatter={formatCurrency} />
         <YAxis type="category" dataKey="name" width={90} />
         <Tooltip
-          formatter={(value: number) =>
+          formatter={(value: number | undefined) =>
             new Intl.NumberFormat("th-TH", {
               style: "currency",
               currency: "THB",
               minimumFractionDigits: 0,
-            }).format(value)
+            }).format(value ?? 0)
           }
         />
         <Bar dataKey="amount" fill="#3b82f6" radius={[0, 8, 8, 0]} />
@@ -122,7 +133,16 @@ export function ExpenseSummaryChart({ byCategory }: { byCategory: any[] }) {
 }
 
 // Department Analysis Horizontal Bar Chart
-export function DepartmentAnalysisChart({ analysis }: { analysis: any[] }) {
+export function DepartmentAnalysisChart({
+  analysis,
+}: {
+  analysis: {
+    departmentName: string;
+    utilizationRate: number;
+    totalSpent: number;
+    totalAllocated: number;
+  }[];
+}) {
   const mounted = useHasMounted();
   if (!mounted) return <div style={{ height: 400 }} />;
   const chartData = analysis
@@ -149,7 +169,8 @@ export function DepartmentAnalysisChart({ analysis }: { analysis: any[] }) {
         <XAxis type="number" domain={[0, 100]} />
         <YAxis type="category" dataKey="name" width={110} />
         <Tooltip
-          formatter={(value: number, name: string) => {
+          formatter={(value: number | undefined, name: string | undefined) => {
+            if (value === undefined) return "";
             if (name === "utilization") return `${value.toFixed(1)}%`;
             return new Intl.NumberFormat("th-TH", {
               style: "currency",
@@ -171,7 +192,11 @@ export function DepartmentAnalysisChart({ analysis }: { analysis: any[] }) {
 }
 
 // Approval Timeline Area Chart
-export function ApprovalTimelineChart({ byLevel }: { byLevel: any[] }) {
+export function ApprovalTimelineChart({
+  byLevel,
+}: {
+  byLevel: { level: number; avgDuration: number; count: number }[];
+}) {
   const mounted = useHasMounted();
   if (!mounted) return <div style={{ height: 300 }} />;
   const chartData = byLevel
@@ -199,7 +224,8 @@ export function ApprovalTimelineChart({ byLevel }: { byLevel: any[] }) {
         <XAxis dataKey="level" />
         <YAxis />
         <Tooltip
-          formatter={(value: number, name: string) => {
+          formatter={(value: number | undefined, name: string | undefined) => {
+            if (value === undefined) return "";
             if (name === "hours") return `${value.toFixed(1)} hours`;
             if (name === "days") return `${value.toFixed(1)} days`;
             return value;

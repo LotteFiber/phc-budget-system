@@ -19,13 +19,11 @@ import {
   DollarSign,
   Calendar,
   Building2,
-  Clock,
 } from "lucide-react";
 import {
   BudgetSummaryChart,
   ExpenseSummaryChart,
   DepartmentAnalysisChart,
-  ApprovalTimelineChart,
 } from "@/components/charts/dashboard-charts";
 
 type Props = {

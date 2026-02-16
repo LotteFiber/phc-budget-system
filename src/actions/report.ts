@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { ExpenseStatus, UserRole } from "@prisma/client";
+import { ExpenseStatus, UserRole, Prisma } from "@prisma/client";
 
 export async function getBudgetSummaryReport(fiscalYear?: number) {
   try {
@@ -13,7 +13,7 @@ export async function getBudgetSummaryReport(fiscalYear?: number) {
 
     const currentYear = fiscalYear || new Date().getFullYear() + 543;
 
-    const where: any = { fiscalYear: currentYear };
+    const where: Prisma.BudgetWhereInput = { fiscalYear: currentYear };
 
     // Non-admin users can only see their department's data
     if (
@@ -41,7 +41,7 @@ export async function getBudgetSummaryReport(fiscalYear?: number) {
     const summary = budgets.map((budget) => {
       const spent = budget.expenses.reduce(
         (sum, exp) => sum + Number(exp.amount),
-        0
+        0,
       );
       const allocated = Number(budget.allocatedAmount);
       const remaining = allocated - spent;
@@ -97,7 +97,7 @@ export async function getExpenseSummaryReport(params?: {
       return { success: false, error: "Unauthorized" };
     }
 
-    const where: any = {
+    const where: Prisma.ExpenseWhereInput = {
       status: {
         notIn: [ExpenseStatus.CANCELLED],
       },
@@ -143,64 +143,94 @@ export async function getExpenseSummaryReport(params?: {
     });
 
     // Group by category
-    const byCategory = expenses.reduce((acc: any, expense) => {
-      const categoryName = expense.category.name;
-      if (!acc[categoryName]) {
-        acc[categoryName] = {
-          categoryName,
-          count: 0,
-          total: 0,
-          approved: 0,
-          pending: 0,
-          rejected: 0,
-        };
-      }
-      acc[categoryName].count++;
-      acc[categoryName].total += Number(expense.amount);
+    type CategorySummary = {
+      categoryName: string;
+      count: number;
+      total: number;
+      approved: number;
+      pending: number;
+      rejected: number;
+    };
 
-      if (
-        expense.status === ExpenseStatus.APPROVED ||
-        expense.status === ExpenseStatus.PAID
-      ) {
-        acc[categoryName].approved += Number(expense.amount);
-      } else if (expense.status === ExpenseStatus.PENDING_APPROVAL) {
-        acc[categoryName].pending += Number(expense.amount);
-      } else if (expense.status === ExpenseStatus.REJECTED) {
-        acc[categoryName].rejected += Number(expense.amount);
-      }
+    const byCategory = expenses.reduce<Record<string, CategorySummary>>(
+      (acc, expense) => {
+        const categoryName = expense.category.name;
+        if (!acc[categoryName]) {
+          acc[categoryName] = {
+            categoryName,
+            count: 0,
+            total: 0,
+            approved: 0,
+            pending: 0,
+            rejected: 0,
+          };
+        }
+        acc[categoryName].count++;
+        acc[categoryName].total += Number(expense.amount);
 
-      return acc;
-    }, {});
+        if (
+          expense.status === ExpenseStatus.APPROVED ||
+          expense.status === ExpenseStatus.PAID
+        ) {
+          acc[categoryName].approved += Number(expense.amount);
+        } else if (expense.status === ExpenseStatus.PENDING_APPROVAL) {
+          acc[categoryName].pending += Number(expense.amount);
+        } else if (expense.status === ExpenseStatus.REJECTED) {
+          acc[categoryName].rejected += Number(expense.amount);
+        }
+
+        return acc;
+      },
+      {},
+    );
 
     // Group by department
-    const byDepartment = expenses.reduce((acc: any, expense) => {
-      const deptName = expense.division.nameLocal || "Unknown";
-      if (!acc[deptName]) {
-        acc[deptName] = {
-          departmentName: deptName,
-          count: 0,
-          total: 0,
-        };
-      }
-      acc[deptName].count++;
-      acc[deptName].total += Number(expense.amount);
-      return acc;
-    }, {});
+    type DepartmentSummary = {
+      departmentName: string;
+      count: number;
+      total: number;
+    };
+
+    const byDepartment = expenses.reduce<Record<string, DepartmentSummary>>(
+      (acc, expense) => {
+        const deptName = expense.division.nameLocal || "Unknown";
+        if (!acc[deptName]) {
+          acc[deptName] = {
+            departmentName: deptName,
+            count: 0,
+            total: 0,
+          };
+        }
+        acc[deptName].count++;
+        acc[deptName].total += Number(expense.amount);
+        return acc;
+      },
+      {},
+    );
 
     // Group by status
-    const byStatus = expenses.reduce((acc: any, expense) => {
-      const status = expense.status;
-      if (!acc[status]) {
-        acc[status] = {
-          status,
-          count: 0,
-          total: 0,
-        };
-      }
-      acc[status].count++;
-      acc[status].total += Number(expense.amount);
-      return acc;
-    }, {});
+    type StatusSummary = {
+      status: ExpenseStatus;
+      count: number;
+      total: number;
+    };
+
+    const byStatus = expenses.reduce<Record<string, StatusSummary>>(
+      (acc, expense) => {
+        const status = expense.status;
+        if (!acc[status]) {
+          acc[status] = {
+            status,
+            count: 0,
+            total: 0,
+          };
+        }
+        acc[status].count++;
+        acc[status].total += Number(expense.amount);
+        return acc;
+      },
+      {},
+    );
 
     const totals = {
       totalExpenses: expenses.length,
@@ -209,7 +239,7 @@ export async function getExpenseSummaryReport(params?: {
         .filter(
           (exp) =>
             exp.status === ExpenseStatus.APPROVED ||
-            exp.status === ExpenseStatus.PAID
+            exp.status === ExpenseStatus.PAID,
         )
         .reduce((sum, exp) => sum + Number(exp.amount), 0),
       pendingAmount: expenses
@@ -247,7 +277,7 @@ export async function getDepartmentAnalysisReport() {
     }
 
     // Only admins can view all departments
-    const departmentFilter: any = {};
+    const departmentFilter: Prisma.DivisionWhereInput = {};
     if (
       session.user.role !== UserRole.SUPER_ADMIN &&
       session.user.role !== UserRole.ADMIN
@@ -282,7 +312,7 @@ export async function getDepartmentAnalysisReport() {
     const analysis = departments.map((dept) => {
       const totalAllocated = dept.budgets.reduce(
         (sum, budget) => sum + Number(budget.allocatedAmount),
-        0
+        0,
       );
 
       const totalSpent = dept.budgets.reduce(
@@ -290,9 +320,9 @@ export async function getDepartmentAnalysisReport() {
           sum +
           budget.expenses.reduce(
             (expSum, exp) => expSum + Number(exp.amount),
-            0
+            0,
           ),
-        0
+        0,
       );
 
       const activeBudgets = dept.budgets.length;
@@ -347,7 +377,7 @@ export async function getApprovalTimelineReport(params?: {
       return { success: false, error: "Unauthorized" };
     }
 
-    const where: any = {
+    const where: Prisma.ApprovalWhereInput = {
       status: {
         notIn: ["PENDING"],
       },
@@ -423,7 +453,14 @@ export async function getApprovalTimelineReport(params?: {
         : 0;
 
     // Group by level
-    const byLevel = timeline.reduce((acc: any, t) => {
+    type LevelSummary = {
+      level: number;
+      count: number;
+      avgDuration: number;
+      totalDuration: number;
+    };
+
+    const byLevel = timeline.reduce<Record<number, LevelSummary>>((acc, t) => {
       if (!acc[t.level]) {
         acc[t.level] = {
           level: t.level,
