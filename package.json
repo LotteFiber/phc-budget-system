@@ -12,7 +12,7 @@
     "db:reset": "prisma migrate reset"
   },
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

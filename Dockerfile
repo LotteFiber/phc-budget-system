@@ -14,12 +14,16 @@ RUN npx prisma generate
 
 RUN npm run build
 
+RUN npx tsc prisma/seed.ts --outDir prisma
+
 # 2 Production Stage
 FROM node:20-slim
 
 WORKDIR /app
 
 ENV NODE_ENV=production
+
+RUN apt-get update -y && apt-get install -y openssl
 
 COPY --from=builder /app/package*.json ./
 RUN npm ci --omit=dev
