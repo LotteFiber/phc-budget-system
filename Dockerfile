@@ -14,8 +14,6 @@ RUN npx prisma generate
 
 RUN npm run build
 
-RUN npx tsc prisma/seed.ts --outDir prisma
-
 # 2 Production Stage
 FROM node:20-slim
 
