@@ -1,7 +1,8 @@
 // PHC Budget System - Database Schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl", "linux-musl-arm64"]
 }
 
 datasource db {
@@ -54,11 +55,11 @@ model User {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  createdBudgets      Budget[]           @relation("BudgetCreator")
-  createdAllocations  BudgetAllocation[] @relation("AllocationCreator")
-  createdExpenses     Expense[]          @relation("ExpenseCreator")
-  approvals           Approval[]
-  notifications       Notification[]
+  createdBudgets     Budget[]           @relation("BudgetCreator")
+  createdAllocations BudgetAllocation[] @relation("AllocationCreator")
+  createdExpenses    Expense[]          @relation("ExpenseCreator")
+  approvals          Approval[]
+  notifications      Notification[]
 
   @@index([email])
   @@index([divisionId])
