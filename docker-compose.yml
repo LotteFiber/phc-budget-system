@@ -1,27 +1,23 @@
 services:
   app:
     build: .
-    container_name: phc-budget_app
+    container_name: app
+    restart: always
     ports:
-      - "3001:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
+      - "3100:3000"
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+    env_file::
+      - .env
     depends_on:
       - db
 
   db:
     image: postgres:17
-    container_name: phc-budget_db
+    container_name: db
     restart: always
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - "5433:5432"
+    env_file:
+      - .env
     volumes:
       - pgdata:/var/lib/postgresql/data
 
